@@ -5,18 +5,17 @@ import { api } from "../../convex/_generated/api";
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Home() {
   const tasks = useQuery(api.tasks.get);
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div>
+        <ThemeToggle />
+      </div>
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <p className="dark:text-white">wow</p>
-        {tasks?.map(({ _id, text }) => (
-          <div className="text-white" key={_id}>
-            {text}
-          </div>
-        ))}
+        {tasks?.map(({ _id, text }) => <div key={_id}>{text}</div>)}
         <Button>Useless Button</Button>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
