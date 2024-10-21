@@ -1,5 +1,8 @@
 "use client";
 
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+
 import * as React from "react";
 import {
   AudioWaveform,
@@ -22,47 +25,49 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+
+// part of the example code, not sure what it was for
+// import { title } from "process";
 
 const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "",
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Momentum",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      plan: "Admin",
     },
     {
-      name: "Acme Corp.",
+      name: "Momentum",
       logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      plan: "Client",
     },
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: "Clientele",
+      url: "/admin/clientele",
+      icon: Command,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "View All",
+          url: "/admin/clientele",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Create",
+          url: "/admin/create",
         },
         {
           title: "Settings",
@@ -156,12 +161,26 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const user = useQuery(api.functions.currentUser);
+  console.log(user?.name);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
+        <SidebarGroup>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a href="/admin">
+                  <SquareTerminal />
+                  <span>Dashboard</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
