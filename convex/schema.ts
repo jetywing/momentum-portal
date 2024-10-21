@@ -12,6 +12,11 @@ const schema = defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     isAnonymous: v.optional(v.boolean()),
+    roles: v.optional(
+      v.array(
+        v.union(v.literal("client"), v.literal("staff"), v.literal("admin")),
+      ),
+    ),
     // other "users" fields...
   }).index("email", ["email"]),
   // Your other tables...

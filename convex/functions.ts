@@ -1,6 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { query, QueryCtx } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
+import { query } from "./_generated/server";
 
 export const currentUser = query({
   args: {},
@@ -12,10 +11,3 @@ export const currentUser = query({
     return await ctx.db.get(userId);
   },
 });
-
-export async function getUserName(ctx: QueryCtx, userId: Id<"users"> | null) {
-  if (userId === null) {
-    return null;
-  }
-  return (await ctx.db.get(userId))?.name;
-}
