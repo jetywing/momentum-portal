@@ -1,67 +1,24 @@
 "use client";
 
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { SignOut } from "@/components/sign-out";
+import { useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { api } from "../../convex/_generated/api";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <div>
-        <ThemeToggle />
-        <SignOut />
-      </div>
-      <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Button>Useless Button</Button>
-      </div>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://momentumdanceavl.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to momentumdanceavl.com →
-        </a>
-      </footer>
-    </div>
-  );
+  const router = useRouter();
+  const user = useQuery(api.functions.currentUser);
+  const role = user?.roles;
+
+  useEffect(() => {
+    if (role?.includes("admin")) {
+      router.push("/admin");
+    } else if (!role?.includes("admin")) {
+      router.push("/client");
+    } else {
+      router.push("/signin"); // Redirect to login if not authenticated
+    }
+  }, [router, role]);
+
+  return null; // Optionally show a loading spinner  ;
 }

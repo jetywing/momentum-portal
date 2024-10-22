@@ -19,7 +19,10 @@ const schema = defineSchema({
     ),
     // other "users" fields...
   }).index("email", ["email"]),
-  // Your other tables...
+  tasks: defineTable({
+    isCompleted: v.boolean(),
+    text: v.string(),
+  }),
 });
 
 export default schema;

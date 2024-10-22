@@ -1,20 +1,20 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-
 import * as React from "react";
 import {
   AudioWaveform,
   BookOpen,
   Bot,
-  Command,
   Frame,
-  GalleryVerticalEnd,
+  Wrench,
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
+  Codesandbox,
+  MessageSquare,
+  BookUser,
+  NotebookText,
+  ChartColumn,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -25,7 +25,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -37,19 +36,14 @@ import {
 // import { title } from "process";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "",
-  },
   teams: [
     {
-      name: "Momentum",
-      logo: GalleryVerticalEnd,
+      name: "Admin",
+      logo: Wrench,
       plan: "Admin",
     },
     {
-      name: "Momentum",
+      name: "Client",
       logo: AudioWaveform,
       plan: "Client",
     },
@@ -58,7 +52,7 @@ const data = {
     {
       title: "Clientele",
       url: "/admin/clientele",
-      icon: Command,
+      icon: BookUser,
       isActive: true,
       items: [
         {
@@ -76,26 +70,26 @@ const data = {
       ],
     },
     {
-      title: "Models",
+      title: "Students",
       url: "#",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
+          title: "View All",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "Create",
           url: "#",
         },
         {
-          title: "Quantum",
+          title: "Settings",
           url: "#",
         },
       ],
     },
     {
-      title: "Documentation",
+      title: "Classes",
       url: "#",
       icon: BookOpen,
       items: [
@@ -113,6 +107,75 @@ const data = {
         },
         {
           title: "Changelog",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Billing",
+      url: "#",
+      icon: NotebookText,
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+        },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+        },
+        {
+          title: "Changelog",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Communications",
+      url: "#",
+      icon: MessageSquare,
+      items: [
+        {
+          title: "Email",
+          url: "#",
+        },
+        {
+          title: "Text",
+          url: "#",
+        },
+        {
+          title: "Chat",
+          url: "#",
+        },
+        {
+          title: "Limits",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Analytics",
+      url: "#",
+      icon: ChartColumn,
+      items: [
+        {
+          title: "Email",
+          url: "#",
+        },
+        {
+          title: "Text",
+          url: "#",
+        },
+        {
+          title: "Chat",
+          url: "#",
+        },
+        {
+          title: "Limits",
           url: "#",
         },
       ],
@@ -160,32 +223,30 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = useQuery(api.functions.currentUser);
-  console.log(user?.name);
+export function AdminSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <a className="text-lg uppercase font-semibold tracking-wide text-center">
+                <Codesandbox />
+                Momentum Portal
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="/admin">
-                  <SquareTerminal />
-                  <span>Dashboard</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
