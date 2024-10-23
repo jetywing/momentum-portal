@@ -36,7 +36,7 @@ export function NavMain({
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
-            <a href="/admin">
+            <a href="/">
               <SquareTerminal />
               <span>Dashboard</span>
             </a>

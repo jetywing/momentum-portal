@@ -1,3 +1,5 @@
+"use client";
+
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Breadcrumb,
@@ -18,8 +20,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
 export default function Page() {
+  const clientele = useQuery(api.users.clienteleList);
+
   return (
     <>
       <header className="flex h-16 justify-between shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -50,18 +56,21 @@ export default function Page() {
         </div>
         <div className="p-8 min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
           <Table>
-            <TableCaption>TODO</TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead>Status</TableHead>
                 <TableHead>Method</TableHead>
+                <TableHead>Email</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>tnser</TableCell>
-                <TableCell>tnser</TableCell>
-              </TableRow>
+              {clientele?.map(({ _id, name, roles, email }) => (
+                <TableRow key={_id}>
+                  <TableCell>{name}</TableCell>
+                  <TableCell>{roles}</TableCell>
+                  <TableCell>{email}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>

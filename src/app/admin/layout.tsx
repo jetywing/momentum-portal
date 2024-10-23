@@ -5,9 +5,10 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Card } from "@/components/ui/card";
-import { CircleSlash } from "lucide-react";
-import { Button } from "@/components/ui/button";
+// import { CircleSlash } from "lucide-react";
+// import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { AdminCommandMenu } from "@/components/admin-command";
 
 export default function AdminDashboardLayout({
   children, // will be a page or nested layout
@@ -17,6 +18,7 @@ export default function AdminDashboardLayout({
   const user = useQuery(api.functions.currentUser);
   const role = user?.roles;
 
+  // TODO: an implementation of this that isn't awful
   if (!role?.includes("admin")) {
     return (
       <div className="flex h-screen w-full items-center justify-center px-4">
@@ -37,9 +39,12 @@ export default function AdminDashboardLayout({
   }
 
   return (
-    <SidebarProvider>
-      <AdminSidebar />
-      <SidebarInset>{children}</SidebarInset>
-    </SidebarProvider>
+    <>
+      <AdminCommandMenu />
+      <SidebarProvider>
+        <AdminSidebar />
+        <SidebarInset>{children}</SidebarInset>
+      </SidebarProvider>
+    </>
   );
 }
