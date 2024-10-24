@@ -5,10 +5,8 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Card } from "@/components/ui/card";
-// import { CircleSlash } from "lucide-react";
-// import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { AdminCommandMenu } from "@/components/admin-command";
+import { LoaderCircle } from "lucide-react";
 
 export default function AdminDashboardLayout({
   children, // will be a page or nested layout
@@ -19,11 +17,12 @@ export default function AdminDashboardLayout({
   const role = user?.roles;
 
   // TODO: an implementation of this that isn't awful
+  // add timeout that redirects and/or shows access denied.
   if (!role?.includes("admin")) {
     return (
       <div className="flex h-screen w-full items-center justify-center px-4">
-        <Card className="p-8 flex flex-col gap-4 justify-center">
-          <Progress value={99} className="w-36" />
+        <Card className="p-8 flex flex-col border-none gap-4 justify-center">
+          <LoaderCircle className="animate-spin" />
           {/* <div className="flex items-center flex-row gap-2 align-middle"> */}
           {/*   <CircleSlash size={36} /> */}
           {/*   <p className="text-2xl md:text-4xl text-red-600 font-bold"> */}

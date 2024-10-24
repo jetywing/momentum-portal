@@ -18,6 +18,8 @@ import { columns } from "./task-columns";
 export default function Page() {
   const tasks = useQuery(api.tasks.get);
 
+  const data = tasks ?? [];
+
   return (
     <>
       <header className="flex h-16 justify-between shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -39,7 +41,7 @@ export default function Page() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="p-8 min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
           <InputTask />
-          <DataTable columns={columns} data={tasks} />
+          <DataTable columns={columns} data={data} />
         </div>
       </div>
     </>
