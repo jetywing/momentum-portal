@@ -22,7 +22,15 @@ const schema = defineSchema({
   tasks: defineTable({
     isCompleted: v.boolean(),
     text: v.string(),
+    due: v.optional(v.string()),
+    userId: v.optional(v.id("users")),
   }),
+  // classes: defineTable({
+  //   name: v.string(),
+  //   description: v.optional( v.string()),
+  //   room: v.optional( v.string() ),
+  //   time: v.number(),
+  // })
 });
 
 export default schema;

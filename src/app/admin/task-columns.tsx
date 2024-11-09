@@ -14,6 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useQuery } from "convex/react";
+import { getUser } from "../../../convex/functions";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -21,6 +23,8 @@ export type Tasks = {
   _id: string;
   isCompleted: boolean;
   text: string;
+  due: string;
+  users: string;
 };
 
 export const columns: ColumnDef<Tasks>[] = [
@@ -64,6 +68,29 @@ export const columns: ColumnDef<Tasks>[] = [
         </Button>
       );
     },
+  },
+  {
+    accessorKey: "due",
+    header: "Due",
+    cell: ({ row }) => {
+      const rowData = row.original;
+      if (rowData.due) {
+        const date = new Date(rowData.due);
+        const formattedDate = date.toLocaleString();
+        return formattedDate;
+      }
+      if (!rowData.due) {
+        return "anytime";
+      }
+    },
+  },
+  {
+    accessorKey: "users",
+    header: "Assigned",
+    // cell: ({ row }) => {
+    //   const rowData = row.original;
+    //   const userId = rowData.users;
+    // },
   },
   {
     id: "actions",
