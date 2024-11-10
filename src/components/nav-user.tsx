@@ -101,7 +101,10 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => window.alert("hey there")}
+            >
               <LogOut />
               <SignOut />
             </DropdownMenuItem>

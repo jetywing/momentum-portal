@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { action, internalMutation, mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
 
 export const get = query({
   args: {},
@@ -19,5 +20,19 @@ export const deleteTask = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
     await ctx.db.delete(args.id);
+  },
+});
+
+export const internalDeleteTask = internalMutation({
+  args: { id: v.id("tasks") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});
+
+export const callDeleteTask = action({
+  args: { id: v.id("tasks") },
+  handler: async (ctx, args) => {
+    await ctx.runMutation(internal.tasks.internalDeleteTask, { id: args.id });
   },
 });

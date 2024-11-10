@@ -14,8 +14,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useQuery } from "convex/react";
-import { getUser } from "../../../convex/functions";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
+
+const DeleteButton = ({ rowId }: { rowId: Id<"tasks"> }) => {
+  const deleteRow = useMutation(api.tasks.deleteTask);
+
+  const handleDelete = () => {
+    deleteRow({ id: rowId })
+      .then(() => {
+        console.log(`Row ${rowId} deleted`);
+      })
+      .catch((error) => {
+        console.error("Failed to delete row:", error);
+      });
+  };
+
+  return <button onClick={handleDelete}>Delete</button>;
+};
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -24,7 +41,7 @@ export type Tasks = {
   isCompleted: boolean;
   text: string;
   due: string;
-  users: string;
+  userId: string;
 };
 
 export const columns: ColumnDef<Tasks>[] = [
@@ -85,7 +102,7 @@ export const columns: ColumnDef<Tasks>[] = [
     },
   },
   {
-    accessorKey: "users",
+    accessorKey: "userId",
     header: "Assigned",
     // cell: ({ row }) => {
     //   const rowData = row.original;
@@ -95,7 +112,7 @@ export const columns: ColumnDef<Tasks>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original;
+      const taskItem = row.original;
 
       return (
         <DropdownMenu>
@@ -108,13 +125,14 @@ export const columns: ColumnDef<Tasks>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment._id)}
+              onClick={() => navigator.clipboard.writeText(taskItem._id)}
             >
-              Copy payment ID
+              Copy taskItem ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>
+              <DeleteButton rowId={taskItem._id} />
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
