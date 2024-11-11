@@ -14,36 +14,37 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+// import { useMutation } from "convex/react";
+// import { api } from "../../../../convex/_generated/api";
+// import { Id } from "../../../../convex/_generated/dataModel";
 
-const DeleteButton = ({ rowId }: { rowId: string }) => {
-  const deleteRow = useMutation(api.tasks.deleteTask);
-
-  const handleDelete = () => {
-    deleteRow({ id: rowId })
-      .then(() => {
-        console.log(`Row ${rowId} deleted`);
-      })
-      .catch((error) => {
-        console.error("Failed to delete row:", error);
-      });
-  };
-
-  return <button onClick={handleDelete}>Delete</button>;
-};
+// const DeleteButton = ({ rowId }: { rowId: Id<"tasks"> }) => {
+//   const deleteRow = useMutation(api.tasks.deleteTask);
+//
+//   const handleDelete = () => {
+//     deleteRow({ id: rowId })
+//       .then(() => {
+//         console.log(`Row ${rowId} deleted`);
+//       })
+//       .catch((error) => {
+//         console.error("Failed to delete row:", error);
+//       });
+//   };
+//
+//   return <button onClick={handleDelete}>Delete</button>;
+// };
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Tasks = {
+export type Students = {
   _id: string;
-  isCompleted: boolean;
-  text: string;
-  due: string;
-  userId: string;
+  firstName: string;
+  lastName: string;
+  birthday: string;
+  team: string;
 };
 
-export const columns: ColumnDef<Tasks>[] = [
+export const columns: ColumnDef<Students>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -67,11 +68,10 @@ export const columns: ColumnDef<Tasks>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "isCompleted",
-    header: "Status",
-  },
-  {
-    accessorKey: "text",
+    id: "name",
+    accessorFn: (row) => {
+      return `${row.firstName} ${row.lastName}`;
+    },
     header: ({ column }) => {
       return (
         <Button
@@ -79,39 +79,47 @@ export const columns: ColumnDef<Tasks>[] = [
           className="p-1"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Tasks
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          Name
+          <ArrowUpDown className="ml-1 h-4 w-4" />
         </Button>
       );
     },
   },
   {
-    accessorKey: "due",
-    header: "Due",
-    cell: ({ row }) => {
-      const rowData = row.original;
-      if (rowData.due) {
-        const date = new Date(rowData.due);
-        const formattedDate = date.toLocaleString();
-        return formattedDate;
+    id: "age",
+    accessorFn: (row) => {
+      const today = new Date();
+      const birthDate = new Date(row.birthday);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      } else if (row.birthday == null) {
+        return "?";
       }
-      if (!rowData.due) {
-        return "anytime";
-      }
+      return age;
+    },
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-1"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Age
+          <ArrowUpDown className="ml-1 h-4 w-4" />
+        </Button>
+      );
     },
   },
   {
-    accessorKey: "userId",
-    header: "Assigned",
-    // cell: ({ row }) => {
-    //   const rowData = row.original;
-    //   const userId = rowData.users;
-    // },
+    accessorKey: "team",
+    header: "Team",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const taskItem = row.original;
+      const studentRow = row.original;
 
       return (
         <DropdownMenu>
@@ -124,13 +132,13 @@ export const columns: ColumnDef<Tasks>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(taskItem._id)}
+              onClick={() => navigator.clipboard.writeText(studentRow._id)}
             >
-              Copy taskItem ID
+              Copy Student ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <DeleteButton rowId={taskItem._id} />
+              {/* <DeleteButton rowId={taskItem._id} /> */}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

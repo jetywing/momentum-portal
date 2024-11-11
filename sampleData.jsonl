@@ -1,3 +1,10 @@
-{"text": "Buy groceries", "isCompleted": true}
-{"text": "Go for a swim", "isCompleted": true}
-{"text": "Integrate Convex", "isCompleted": false}
+{"firstName": "Sophia", "lastName": "Johnson", "image": "https://example.com/images/sophia.jpg", "status": true, "team": ["mdp", "club"], "classes": [], "account": [], "isAccHolder": false}
+{"firstName": "Liam", "lastName": "Smith", "image": "https://example.com/images/liam.jpg", "status": false, "team": ["mdp2"], "classes": [], "account": [], "isAccHolder": false}
+{"firstName": "Olivia", "lastName": "Brown", "image": "https://example.com/images/olivia.jpg", "status": true, "team": ["mdp"], "classes": [], "account": [], "isAccHolder": false}
+{"firstName": "Noah", "lastName": "Williams", "image": "https://example.com/images/noah.jpg", "status": true, "team": ["club"], "classes": [], "account": [], "isAccHolder": false}
+{"firstName": "Emma", "lastName": "Davis", "image": "", "status": false, "team": ["mdp2", "club"], "classes": [], "account": [], "isAccHolder": false}
+{"firstName": "James", "lastName": "Martinez", "image": "https://example.com/images/james.jpg", "status": true, "team": ["mdp", "mdp2"], "classes": [], "account": [], "isAccHolder": false}
+{"firstName": "Ava", "lastName": "Garcia", "image": "", "status": false, "team": ["club"], "classes": [], "account": [], "isAccHolder": false}
+{"firstName": "William", "lastName": "Lopez", "image": "https://example.com/images/william.jpg", "status": true, "team": ["mdp2"], "classes": [], "account": [], "isAccHolder": false}
+{"firstName": "Mia", "lastName": "Wilson", "image": "https://example.com/images/mia.jpg", "status": true, "team": ["mdp"], "classes": [], "account": [], "isAccHolder": false}
+{"firstName": "Ethan", "lastName": "Taylor", "image": "", "status": false, "team": ["mdp", "club"], "classes": [], "account": [], "isAccHolder": false}

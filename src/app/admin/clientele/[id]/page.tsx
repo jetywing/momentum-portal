@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 
-async function getUserData(userId: string) {
+async function getUserData(id: string) {
   const request = {
     path: "users:getUserById",
-    args: { userId },
+    args: { id: id },
     format: "json",
   };
   const res = await fetch(`${process.env.NEXT_PUBLIC_CONVEX_URL}/api/query`, {
@@ -17,12 +17,9 @@ async function getUserData(userId: string) {
   return await res.json();
 }
 
-export default async function UserPage({
-  params,
-}: {
-  params: { userId: string };
-}) {
-  const user = await getUserData(params.userId);
+export default async function UserPage({ params }: { params: { id: string } }) {
+  const resData = await getUserData(params.id);
+  const user = resData.value;
   console.log(user);
 
   if (!user) {
@@ -30,11 +27,12 @@ export default async function UserPage({
   }
 
   return (
-    <div>
-      <p>wow</p>
-      <h1>{user.name}</h1>
-      <p>{user.email}</p>
-      {/* Render other user details */}
+    <div className="flex flex-row p-12 items-end gap-6">
+      <img className="w-20 h-20 rounded-full" alt="avatar" src={user.image} />
+      <div>
+        <h1 className="text-3xl font-semibold">{user.name}</h1>
+        <p>{user.email}</p>
+      </div>
     </div>
   );
 }

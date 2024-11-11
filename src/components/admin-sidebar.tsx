@@ -4,7 +4,6 @@ import * as React from "react";
 import {
   AudioWaveform,
   BookOpen,
-  Bot,
   Wrench,
   Settings2,
   Codesandbox,
@@ -12,6 +11,7 @@ import {
   BookUser,
   NotebookText,
   ChartColumn,
+  Users,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -69,15 +69,15 @@ const data = {
     {
       title: "Students",
       url: "#",
-      icon: Bot,
+      icon: Users,
       items: [
         {
           title: "View All",
-          url: "#",
+          url: "/admin/students",
         },
         {
           title: "Create",
-          url: "#",
+          url: "/admin/students/create",
         },
         {
           title: "Settings",

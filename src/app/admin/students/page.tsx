@@ -11,20 +11,15 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import Link from "next/link";
+import { DataTable } from "@/components/data-table";
+import { columns } from "./student-columns";
 
 export default function Page() {
-  const clientele = useQuery(api.users.clienteleList);
+  const allStudents = useQuery(api.students.getAllStudents);
+
+  const data = allStudents ?? [];
 
   return (
     <>
@@ -39,7 +34,7 @@ export default function Page() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Clientele</BreadcrumbPage>
+                <BreadcrumbPage>Students</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -55,26 +50,7 @@ export default function Page() {
           <div className="aspect-video rounded-xl bg-muted/50" />
         </div>
         <div className="p-8 min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Status</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead>Email</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {clientele?.map(({ _id, name, roles, email }) => (
-                <TableRow key={_id}>
-                  <Link href={`/admin/clientele/${_id}`}>
-                    <TableCell>{name}</TableCell>
-                  </Link>
-                  <TableCell>{roles}</TableCell>
-                  <TableCell>{email}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DataTable columns={columns} data={data} />
         </div>
       </div>
     </>

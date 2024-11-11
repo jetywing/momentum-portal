@@ -5,7 +5,7 @@ import { authTables } from "@convex-dev/auth/server";
 const schema = defineSchema({
   ...authTables,
   users: defineTable({
-    userId: v.number(),
+    userId: v.optional(v.string()),
     name: v.optional(v.string()),
     image: v.optional(v.string()),
     email: v.optional(v.string()),
@@ -18,20 +18,36 @@ const schema = defineSchema({
         v.union(v.literal("client"), v.literal("staff"), v.literal("admin")),
       ),
     ),
+    students: v.optional(v.array(v.id("students"))),
     // other "users" fields...
   }).index("email", ["email"]),
+  students: defineTable({
+    firstName: v.string(),
+    lastName: v.string(),
+    image: v.optional(v.string()),
+    status: v.boolean(),
+    birthday: v.optional(v.string()),
+    team: v.optional(
+      v.array(v.union(v.literal("mdp"), v.literal("mdp2"), v.literal("club"))),
+    ),
+    classes: v.optional(v.array(v.id("classes"))),
+    account: v.optional(v.array(v.id("users"))),
+    isAccHolder: v.boolean(),
+  }),
+  classes: defineTable({
+    name: v.string(),
+    description: v.optional(v.string()),
+    room: v.optional(v.string()),
+    time: v.number(),
+    students: v.optional(v.array(v.id("students"))),
+    instructor: v.array(v.id("users")),
+  }),
   tasks: defineTable({
     isCompleted: v.boolean(),
     text: v.string(),
     due: v.optional(v.string()),
     userId: v.optional(v.id("users")),
   }),
-  // classes: defineTable({
-  //   name: v.string(),
-  //   description: v.optional( v.string()),
-  //   room: v.optional( v.string() ),
-  //   time: v.number(),
-  // })
 });
 
 export default schema;
