@@ -8,6 +8,16 @@ export const getAllStudents = query({
   },
 });
 
+export const getStudentsByAccount = query({
+  args: { id: v.array(v.id("users")) },
+  handler: async (ctx, args) => {
+    return ctx.db
+      .query("students")
+      .filter((q) => q.eq(q.field("account"), args.id))
+      .collect();
+  },
+});
+
 export const addStudent = mutation({
   args: {
     firstName: v.string(),
@@ -18,7 +28,7 @@ export const addStudent = mutation({
   handler: async (ctx, args) => {
     await ctx.db.insert("students", {
       firstName: args.firstName,
-      lastName: args.firstName,
+      lastName: args.lastName,
       status: true,
       birthday: args.birthday,
       isAccHolder: false,

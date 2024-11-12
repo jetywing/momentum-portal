@@ -12,6 +12,7 @@ import {
   NotebookText,
   ChartColumn,
   Users,
+  Mail,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -28,6 +29,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { PaperPlaneIcon } from "@radix-ui/react-icons";
 
 // part of the example code, not sure what it was for
 // import { title } from "process";
@@ -132,9 +134,9 @@ const data = {
       ],
     },
     {
-      title: "Communication",
+      title: "Messages",
       url: "#",
-      icon: MessageSquare,
+      icon: Mail,
       items: [
         {
           title: "Email",
@@ -212,7 +214,7 @@ export function AdminSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a className="text-lg uppercase font-semibold tracking-wide text-center">
+              <a className="text-center text-lg font-semibold uppercase tracking-wide">
                 <Codesandbox />
                 Momentum Portal
               </a>
