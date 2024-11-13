@@ -55,13 +55,17 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="flex flex-row items-end gap-6 p-12">
-      <img className="h-20 w-20 rounded-full" alt="avatar" src={user.image} />
-      <div>
-        <h1 className="text-3xl font-semibold">{user.name}</h1>
-        <p>{user.email}</p>
+    <>
+      <div className="flex flex-row items-end gap-6 p-12">
+        <img className="h-20 w-20 rounded-full" alt="avatar" src={user.image} />
+        <div>
+          <h1 className="text-3xl font-semibold">{user.name}</h1>
+          <p>{user.email}</p>
+        </div>
       </div>
-      {students?.map(({ _id, firstName }) => <p key={_id}>{firstName}</p>)}
-    </div>
+      <div className="flex flex-col gap-4 px-20">
+        {students?.map(({ _id, firstName }) => <p key={_id}>{firstName}</p>)}
+      </div>
+    </>
   );
 }

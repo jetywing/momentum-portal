@@ -22,6 +22,7 @@ import {
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import Link from "next/link";
+import { DateSelect } from "@/components/date-select";
 
 export default function Page() {
   const clientele = useQuery(api.users.clienteleList);
@@ -50,7 +51,9 @@ export default function Page() {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="aspect-video rounded-xl bg-muted/50" />
+          <div className="aspect-video rounded-xl bg-muted/50">
+            <DateSelect />
+          </div>
           <div className="aspect-video rounded-xl bg-muted/50" />
           <div className="aspect-video rounded-xl bg-muted/50" />
         </div>
