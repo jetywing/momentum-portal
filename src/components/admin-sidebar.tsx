@@ -7,12 +7,12 @@ import {
   Wrench,
   Settings2,
   Codesandbox,
-  MessageSquare,
   BookUser,
   NotebookText,
   ChartColumn,
   Users,
   Mail,
+  ChevronsRight,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -29,7 +29,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { PaperPlaneIcon } from "@radix-ui/react-icons";
 
 // part of the example code, not sure what it was for
 // import { title } from "process";
@@ -60,7 +59,7 @@ const data = {
         },
         {
           title: "Create",
-          url: "/admin/create",
+          url: "/admin/clientele/create",
         },
         {
           title: "Settings",
@@ -214,8 +213,8 @@ export function AdminSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a className="text-center text-lg font-semibold uppercase tracking-wide">
-                <Codesandbox />
+              <a className="text-nowrap text-center text-lg font-semibold uppercase tracking-wide">
+                <ChevronsRight size={64} color="#ce2128" />
                 Momentum Portal
               </a>
             </SidebarMenuButton>

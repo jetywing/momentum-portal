@@ -4,7 +4,15 @@ import { mutation, query } from "./_generated/server";
 export const getAllStudents = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("students").collect();
+    return await ctx.db.query("students").order("desc").collect();
+  },
+});
+
+export const getStudentById = query({
+  args: { id: v.id("students") },
+  handler: async (ctx, args) => {
+    const student = ctx.db.get(args.id);
+    return student;
   },
 });
 

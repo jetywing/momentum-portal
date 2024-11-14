@@ -13,8 +13,25 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
+const routes = [
+  {
+    name: "Dashboard",
+    value: "/admin",
+  },
+  {
+    name: "Clientele",
+    value: "/admin/clientele",
+  },
+  {
+    name: "Students",
+    value: "/admin/students",
+  },
+];
+
 export function AdminCommandMenu() {
-  const tasks = useQuery(api.tasks.get);
+  const clients = useQuery(api.users.clienteleList);
+  console.log(clients);
+
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
 
@@ -30,14 +47,13 @@ export function AdminCommandMenu() {
   }, []);
 
   function handleSelect(value: string) {
-    if (value == "Dashboard") {
-      router.push("/admin");
-      setOpen(!open);
-    } else {
-      const path = value.toLowerCase();
-      router.push(`/admin/${path}`);
-      setOpen(!open);
-    }
+    router.push(value);
+    setOpen(!open);
+  }
+
+  function handleClientSelect(value: string) {
+    router.push(`/admin/clientele/${value}`);
+    setOpen(!open);
   }
 
   return (
@@ -46,18 +62,22 @@ export function AdminCommandMenu() {
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Suggestions">
-          <CommandItem onSelect={(value) => handleSelect(value)}>
-            Dashboard
-          </CommandItem>
-          <CommandItem onSelect={(value) => handleSelect(value)}>
-            Clientele
-          </CommandItem>
-          <CommandItem>Search Emoji</CommandItem>
-          <CommandItem>Calculator</CommandItem>
+          {routes?.map((item) => {
+            return (
+              <CommandItem
+                key={item.name}
+                onSelect={() => handleSelect(item.value)}
+              >
+                {item.name}
+              </CommandItem>
+            );
+          })}
         </CommandGroup>
-        <CommandGroup heading="Tasks">
-          {tasks?.map(({ _id, text }) => (
-            <CommandItem key={_id}>{text}</CommandItem>
+        <CommandGroup heading="Clientele">
+          {clients?.map(({ _id, name }) => (
+            <CommandItem key={_id} onSelect={() => handleClientSelect(_id)}>
+              {name}
+            </CommandItem>
           ))}
         </CommandGroup>
       </CommandList>

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, LinkIcon } from "lucide-react";
 import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 // import { useMutation } from "convex/react";
 // import { api } from "../../../../convex/_generated/api";
 // import { Id } from "../../../../convex/_generated/dataModel";
@@ -113,8 +115,29 @@ export const columns: ColumnDef<Students>[] = [
     },
   },
   {
-    accessorKey: "team",
     header: "Team",
+    cell: ({ row }) => {
+      const team = row.original.team;
+
+      if (team) {
+        return <Badge variant={"outline"}>{team}</Badge>;
+      } else {
+        return <Badge variant={"outline"}>rec</Badge>;
+      }
+    },
+  },
+  {
+    id: "Page",
+    cell: ({ row }) => {
+      const student = row.original;
+      return (
+        <Button variant={"ghost"} className="px-2" asChild>
+          <Link href={`/admin/students/${student._id}`}>
+            <LinkIcon />
+          </Link>
+        </Button>
+      );
+    },
   },
   {
     id: "actions",

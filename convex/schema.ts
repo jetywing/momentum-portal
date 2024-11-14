@@ -22,6 +22,8 @@ const schema = defineSchema({
     // other "users" fields...
   }).index("email", ["email"]),
   students: defineTable({
+    // idx is short for index here.
+    idx: v.optional(v.number()),
     firstName: v.string(),
     lastName: v.string(),
     image: v.optional(v.string()),

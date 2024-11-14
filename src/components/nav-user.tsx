@@ -54,11 +54,11 @@ export function NavUser() {
                 <span className="truncate font-semibold">{user?.name}</span>
                 <span className="truncate text-xs">{user?.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="size-4 ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            className="min-w-56 w-[--radix-dropdown-menu-trigger-width] rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
@@ -101,11 +101,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => window.alert("hey there")}
-            >
-              <LogOut />
+            <DropdownMenuItem asChild>
               <SignOut />
             </DropdownMenuItem>
           </DropdownMenuContent>

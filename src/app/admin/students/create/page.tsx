@@ -94,7 +94,7 @@ export default function CreateStudentPage() {
   console.log(accounts);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const birthday = "2003-08-13T17:40:00Z";
+    const birthday = `${values.year}-${values.month}-${values.day}T00:00:00Z`;
 
     await fetchMutation(api.students.addStudent, {
       firstName: values.firstName as string,
