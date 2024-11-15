@@ -12,12 +12,12 @@ import {
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { UserIcon } from "lucide-react";
+import { thisClassIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 
-async function getUserData(id: string) {
+async function getClassData(id: string) {
   const request = {
-    path: "users:getUserById",
+    path: "classes:getClassById",
     args: { id: id },
     format: "json",
   };
@@ -32,45 +32,38 @@ async function getUserData(id: string) {
   return await res.json();
 }
 
-// TODO: actually implement this
-interface T {
-  idArray: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    team: [string];
-  };
-}
+// async function getStudents(id: Array<T>) {
+//   const request = {
+//     path: "students:getStudentsByAccount",
+//     args: { id: id },
+//     format: "json",
+//   };
+//   const res = await fetch(`${process.env.NEXT_PUBLIC_CONVEX_URL}/api/query`, {
+//     method: "POST",
+//     body: JSON.stringify(request),
+//     headers: { "Content-Type": "application/json" },
+//   });
+//
+//   if (!res.ok) return null;
+//
+//   return await res.json();
 
-async function getStudents(id: Array<T>) {
-  const request = {
-    path: "students:getStudentsByAccount",
-    args: { id: id },
-    format: "json",
-  };
-  const res = await fetch(`${process.env.NEXT_PUBLIC_CONVEX_URL}/api/query`, {
-    method: "POST",
-    body: JSON.stringify(request),
-    headers: { "Content-Type": "application/json" },
-  });
+export default async function thisClassPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const resData = await getClassData(params.id);
+  const thisClass = resData.value;
 
-  if (!res.ok) return null;
+  // const idArray = [];
+  // idArray.push(params.id);
+  //
+  // const studentsData = await getStudents(idArray);
+  // const students = studentsData.value;
+  // console.log(students);
 
-  return await res.json();
-}
-
-export default async function UserPage({ params }: { params: { id: string } }) {
-  const resData = await getUserData(params.id);
-  const user = resData.value;
-
-  const idArray = [];
-  idArray.push(params.id);
-
-  const studentsData = await getStudents(idArray);
-  const students = studentsData.value;
-  console.log(students);
-
-  if (!user) {
+  if (!thisClass) {
     notFound(); // This will render a 404 page
   }
 
@@ -93,7 +86,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{user.name}</BreadcrumbPage>
+                <BreadcrumbPage>{thisClass.name}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -103,29 +96,22 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         </div>
       </header>
       <div className="flex flex-row items-end gap-6 p-12">
-        <Avatar className="h-32 w-32 rounded-full">
-          <AvatarImage src={user?.image} alt={user?.name} />
-          <AvatarFallback className="rounded-lg">
-            <UserIcon size={64} />
-          </AvatarFallback>
-        </Avatar>
         <div>
-          <h1 className="text-3xl font-semibold">{user.name}</h1>
-          <p>{user.email}</p>
+          <h1 className="text-3xl font-semibold">{thisClass.name}</h1>
         </div>
       </div>
       <Separator className="my-12 mb-8" />
       <div className="flex flex-col gap-4 px-20">
-        <div className="flex flex-wrap gap-4">
-          {students?.map(({ _id, firstName, lastName, team }) => (
-            <Card key={_id} className="p-8">
-              <p key={_id}>
-                {firstName} {lastName}
-              </p>
-              <Badge key={_id}>{team}</Badge>
-            </Card>
-          ))}
-        </div>
+        {/* <div className="flex flex-wrap gap-4"> */}
+        {/*   {students?.map(({ _id, firstName, lastName, team }) => ( */}
+        {/*     <Card key={_id} className="p-8"> */}
+        {/*       <p key={_id}> */}
+        {/*         {firstName} {lastName} */}
+        {/*       </p> */}
+        {/*       <Badge key={_id}>{team}</Badge> */}
+        {/*     </Card> */}
+        {/*   ))} */}
+        {/* </div> */}
       </div>
     </>
   );

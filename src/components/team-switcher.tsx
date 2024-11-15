@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, Wrench } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -16,18 +16,21 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
-export function TeamSwitcher({
-  teams,
-}: {
-  teams: {
-    name: string;
-    logo: React.ElementType;
-    plan: string;
-  }[];
-}) {
+export function TeamSwitcher() {
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
+  const router = useRouter();
+
+  const currentUser = useQuery(api.functions.currentUser);
+
+  const roles = currentUser?.roles;
+
+  function handleClick(role: string) {
+    router.push(`/${role}`);
+  }
 
   // TODO: hook in functionality to switch routes based on selection
   // extra points to only show active roles per account.
@@ -40,19 +43,17 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-black text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-4" />
+              <div className="size-8 flex aspect-square items-center justify-center rounded-lg bg-black text-sidebar-primary-foreground">
+                <Wrench className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {activeTeam.name}
-                </span>
+                <span className="truncate font-semibold">Admin</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            className="min-w-56 w-[--radix-dropdown-menu-trigger-width] rounded-lg"
             align="start"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
@@ -60,16 +61,9 @@ export function TeamSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Role
             </DropdownMenuLabel>
-            {teams.map((team) => (
-              <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <team.logo className="size-4 shrink-0" />
-                </div>
-                {team.name}
+            {roles?.map((role) => (
+              <DropdownMenuItem key={role} onClick={() => handleClick(role)}>
+                {role.charAt(0).toUpperCase() + role.slice(1)}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

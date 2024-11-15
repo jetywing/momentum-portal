@@ -41,6 +41,8 @@ const schema = defineSchema({
     description: v.optional(v.string()),
     room: v.optional(v.string()),
     time: v.number(),
+    duration: v.number(),
+    season: v.optional(v.string()),
     students: v.optional(v.array(v.id("students"))),
     instructor: v.array(v.id("users")),
   }),

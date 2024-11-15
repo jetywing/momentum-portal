@@ -1,10 +1,5 @@
-{"firstName": "Sophia", "lastName": "Johnson", "image": "https://example.com/images/sophia.jpg", "status": true, "team": ["mdp", "club"], "classes": [], "account": [], "isAccHolder": false}
-{"firstName": "Liam", "lastName": "Smith", "image": "https://example.com/images/liam.jpg", "status": false, "team": ["mdp2"], "classes": [], "account": [], "isAccHolder": false}
-{"firstName": "Olivia", "lastName": "Brown", "image": "https://example.com/images/olivia.jpg", "status": true, "team": ["mdp"], "classes": [], "account": [], "isAccHolder": false}
-{"firstName": "Noah", "lastName": "Williams", "image": "https://example.com/images/noah.jpg", "status": true, "team": ["club"], "classes": [], "account": [], "isAccHolder": false}
-{"firstName": "Emma", "lastName": "Davis", "image": "", "status": false, "team": ["mdp2", "club"], "classes": [], "account": [], "isAccHolder": false}
-{"firstName": "James", "lastName": "Martinez", "image": "https://example.com/images/james.jpg", "status": true, "team": ["mdp", "mdp2"], "classes": [], "account": [], "isAccHolder": false}
-{"firstName": "Ava", "lastName": "Garcia", "image": "", "status": false, "team": ["club"], "classes": [], "account": [], "isAccHolder": false}
-{"firstName": "William", "lastName": "Lopez", "image": "https://example.com/images/william.jpg", "status": true, "team": ["mdp2"], "classes": [], "account": [], "isAccHolder": false}
-{"firstName": "Mia", "lastName": "Wilson", "image": "https://example.com/images/mia.jpg", "status": true, "team": ["mdp"], "classes": [], "account": [], "isAccHolder": false}
-{"firstName": "Ethan", "lastName": "Taylor", "image": "", "status": false, "team": ["mdp", "club"], "classes": [], "account": [], "isAccHolder": false}
+{"name": "chacha", "description": "dude", "room": "1", "time": 700, "duration": 45, "students": [], "instructor": ["k17dwgmqynrv7swwb0s9vdzf6s72zeap"]}
+{"name": "wowza", "description": "lorem ipsum", "room": "1", "time": 800, "duration": 45, "students": ["k971f1cjr7nepr3ztagc1x0g6h74f2j1"], "instructor": ["k17dwgmqynrv7swwb0s9vdzf6s72zeap"]}
+{"name": "cool class", "description": "dude", "room": "1", "time": 945, "duration": 45, "students": [], "instructor": ["k17dwgmqynrv7swwb0s9vdzf6s72zeap"]}
+{"name": "yeah dancing", "description": "dude", "room": "1", "time": 1000, "duration": 45, "students": [], "instructor": ["k17dwgmqynrv7swwb0s9vdzf6s72zeap"]}
+{"name": "for sure", "description": "dude", "room": "2", "time": 1230, "duration": 45, "students": [], "instructor": ["k17dwgmqynrv7swwb0s9vdzf6s72zeap"]}

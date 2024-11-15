@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, SquareTerminal, type LucideIcon } from "lucide-react";
+import { ChevronRight, PanelsTopLeft, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
@@ -37,7 +37,7 @@ export function NavMain({
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
             <a href="/">
-              <SquareTerminal />
+              <PanelsTopLeft />
               <span>Dashboard</span>
             </a>
           </SidebarMenuButton>

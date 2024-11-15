@@ -26,6 +26,10 @@ const routes = [
     name: "Students",
     value: "/admin/students",
   },
+  {
+    name: "Classes",
+    value: "/admin/classes",
+  },
 ];
 
 export function AdminCommandMenu() {

@@ -2,11 +2,8 @@
 
 import * as React from "react";
 import {
-  AudioWaveform,
   BookOpen,
-  Wrench,
   Settings2,
-  Codesandbox,
   BookUser,
   NotebookText,
   ChartColumn,
@@ -34,18 +31,6 @@ import {
 // import { title } from "process";
 
 const data = {
-  teams: [
-    {
-      name: "Admin",
-      logo: Wrench,
-      plan: "Admin",
-    },
-    {
-      name: "Client",
-      logo: AudioWaveform,
-      plan: "Client",
-    },
-  ],
   navMain: [
     {
       title: "Clientele",
@@ -92,19 +77,19 @@ const data = {
       icon: BookOpen,
       items: [
         {
-          title: "Introduction",
+          title: "View All",
+          url: "/admin/classes",
+        },
+        {
+          title: "Lessons",
           url: "#",
         },
         {
-          title: "Get Started",
+          title: "Create",
           url: "#",
         },
         {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
+          title: "Settings",
           url: "#",
         },
       ],
@@ -220,7 +205,7 @@ export function AdminSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
