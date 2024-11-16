@@ -71,8 +71,16 @@ export const columns: ColumnDef<Students>[] = [
   },
   {
     id: "name",
-    accessorFn: (row) => {
-      return `${row.firstName} ${row.lastName}`;
+    accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+    cell: ({ row }) => {
+      const student = row.original;
+      return (
+        <Button variant={"ghost"} className="px-2 py-1">
+          <Link href={"/admin/students/" + student._id}>
+            {student.firstName} {student.lastName}
+          </Link>
+        </Button>
+      );
     },
     header: ({ column }) => {
       return (
@@ -126,19 +134,19 @@ export const columns: ColumnDef<Students>[] = [
       }
     },
   },
-  {
-    id: "Page",
-    cell: ({ row }) => {
-      const student = row.original;
-      return (
-        <Button variant={"ghost"} className="px-2" asChild>
-          <Link href={`/admin/students/${student._id}`}>
-            <LinkIcon />
-          </Link>
-        </Button>
-      );
-    },
-  },
+  // {
+  //   id: "Page",
+  //   cell: ({ row }) => {
+  //     const student = row.original;
+  //     return (
+  //       <Button variant={"ghost"} className="px-2" asChild>
+  //         <Link href={`/admin/students/${student._id}`}>
+  //           <LinkIcon />
+  //         </Link>
+  //       </Button>
+  //     );
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row }) => {
