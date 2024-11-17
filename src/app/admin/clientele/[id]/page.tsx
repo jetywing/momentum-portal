@@ -14,8 +14,9 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { UserIcon } from "lucide-react";
 import { notFound } from "next/navigation";
+import { Id } from "../../../../../convex/_generated/dataModel";
 
-async function getUserData(id: string) {
+async function getUserData(id: Id<"users">) {
   const request = {
     path: "users:getUserById",
     args: { id: id },
@@ -32,17 +33,7 @@ async function getUserData(id: string) {
   return await res.json();
 }
 
-// TODO: actually implement this
-interface T {
-  idArray: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    team: [string];
-  };
-}
-
-async function getStudents(id: Array<T>) {
+async function getStudents(id: Id<"users">[]) {
   const request = {
     path: "students:getStudentsByAccount",
     args: { id: id },
@@ -59,7 +50,11 @@ async function getStudents(id: Array<T>) {
   return await res.json();
 }
 
-export default async function UserPage({ params }: { params: { id: string } }) {
+export default async function UserPage({
+  params,
+}: {
+  params: { id: Id<"users"> };
+}) {
   const resData = await getUserData(params.id);
   const user = resData.value;
 
@@ -117,14 +112,26 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       <Separator className="my-12 mb-8" />
       <div className="flex flex-col gap-4 px-20">
         <div className="flex flex-wrap gap-4">
-          {students?.map(({ _id, firstName, lastName, team }) => (
-            <Card key={_id} className="p-8">
-              <p key={_id}>
-                {firstName} {lastName}
-              </p>
-              <Badge key={_id}>{team}</Badge>
-            </Card>
-          ))}
+          {students?.map(
+            ({
+              _id,
+              firstName,
+              lastName,
+              team,
+            }: {
+              _id: Id<"students">;
+              firstName: string;
+              lastName: string;
+              team: string[];
+            }) => (
+              <Card key={_id} className="p-8">
+                <p key={_id}>
+                  {firstName} {lastName}
+                </p>
+                <Badge key={_id}>{team}</Badge>
+              </Card>
+            ),
+          )}
         </div>
       </div>
     </>

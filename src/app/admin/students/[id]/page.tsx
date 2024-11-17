@@ -17,9 +17,6 @@ async function getStudentData(id: string) {
   return await res.json();
 }
 
-// TODO: actually implement this
-// interface T {}
-
 // async function getStudents(id: Array<T>) {
 //   const request = {
 //     path: "users",

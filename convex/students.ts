@@ -26,6 +26,16 @@ export const getStudentsByAccount = query({
   },
 });
 
+export const getStudentsByClass = query({
+  args: { id: v.array(v.id("classes")) },
+  handler: async (ctx, args) => {
+    return ctx.db
+      .query("students")
+      .filter((q) => q.eq(q.field("classes"), args.id))
+      .collect();
+  },
+});
+
 export const addStudent = mutation({
   args: {
     firstName: v.string(),

@@ -11,8 +11,17 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { DataTable } from "@/components/data-table";
+import { columns } from "./class-columns";
 
 export default function ClassPage() {
+  const classes = useQuery(api.classes.getAllClasses);
+  console.log(classes);
+
+  const data = classes ?? [];
+
   return (
     <>
       <header className="group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear">
@@ -41,7 +50,9 @@ export default function ClassPage() {
           <div className="aspect-video rounded-xl bg-muted/50" />
           <div className="aspect-video rounded-xl bg-muted/50" />
         </div>
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 p-8 md:min-h-min"></div>
+        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 p-8 md:min-h-min">
+          <DataTable columns={columns} data={data} />
+        </div>
       </div>
     </>
   );

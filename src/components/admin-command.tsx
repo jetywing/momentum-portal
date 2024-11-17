@@ -34,7 +34,6 @@ const routes = [
 
 export function AdminCommandMenu() {
   const clients = useQuery(api.users.clienteleList);
-  console.log(clients);
 
   const [open, setOpen] = React.useState(false);
   const router = useRouter();

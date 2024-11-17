@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, LinkIcon } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -11,14 +11,30 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { minToTimeFormat } from "@/lib/utils";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-// import { useMutation } from "convex/react";
-// import { api } from "../../../../convex/_generated/api";
-// import { Id } from "../../../../convex/_generated/dataModel";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
+
+function InstructorCell({ instructorId }: { instructorId: Id<"users"> }) {
+  const instructor = useQuery(api.users.getUserById, { id: instructorId });
+
+  if (!instructor) {
+    return <span>loading...</span>;
+  }
+
+  return (
+    <Link
+      className="duration-150 hover:opacity-60"
+      href={`/admin/clientele/${instructor._id}`}
+    >
+      {instructor.name}
+    </Link>
+  );
+}
 
 // const DeleteButton = ({ rowId }: { rowId: Id<"tasks"> }) => {
 //   const deleteRow = useMutation(api.tasks.deleteTask);
@@ -38,15 +54,20 @@ import { Badge } from "@/components/ui/badge";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Students = {
+export type Classes = {
   _id: string;
-  firstName: string;
-  lastName: string;
-  birthday: string;
-  team: string;
+  name: string;
+  description?: string;
+  type?: string;
+  capacity?: number;
+  room?: string;
+  time: number; // Assuming it's a UTC timestamp or similar
+  duration: number; // Duration in minutes or another unit
+  season?: string;
+  students?: string[]; // Array of `students` IDs as strings
+  instructor: Id<"users">[]; // Array of `users` IDs as strings
 };
-
-export const columns: ColumnDef<Students>[] = [
+export const columns: ColumnDef<Classes>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -70,18 +91,7 @@ export const columns: ColumnDef<Students>[] = [
     enableHiding: false,
   },
   {
-    id: "name",
-    accessorFn: (row) => `${row.firstName} ${row.lastName}`,
-    cell: ({ row }) => {
-      const student = row.original;
-      return (
-        <Button variant={"ghost"} className="px-2 py-1" asChild>
-          <Link href={"/admin/students/" + student._id}>
-            {student.firstName} {student.lastName}
-          </Link>
-        </Button>
-      );
-    },
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
@@ -90,63 +100,64 @@ export const columns: ColumnDef<Students>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Name
-          <ArrowUpDown className="ml-1 h-4 w-4" />
+          <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-  },
-  {
-    id: "age",
-    accessorFn: (row) => {
-      const today = new Date();
-      const birthDate = new Date(row.birthday);
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      } else if (row.birthday == null) {
-        return "?";
-      }
-      return age;
-    },
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="p-1"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Age
-          <ArrowUpDown className="ml-1 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    id: "birthday",
-    header: "Birthday",
-    accessorFn: (row) => {
-      const birthday = new Date(row.birthday);
-      const birthDate = birthday.toLocaleDateString();
-      return birthDate;
-    },
-  },
-  {
-    header: "Team",
     cell: ({ row }) => {
-      const team = row.original.team;
-
-      if (team) {
-        return <Badge variant={"outline"}>{team}</Badge>;
-      } else {
-        return <Badge variant={"outline"}>REC</Badge>;
-      }
+      const thisClass = row.original;
+      return (
+        <Button variant={"ghost"} className="px-2 py-1" asChild>
+          <Link href={"/admin/classes/" + thisClass._id}>{thisClass.name}</Link>
+        </Button>
+      );
     },
+  },
+  {
+    id: "capacity",
+    header: "Capacity",
+    cell: ({ row }) => {
+      const classItem = row.original;
+      const studentCount = classItem.students?.length;
+      return `${studentCount}/${classItem.capacity}`;
+    },
+  },
+  {
+    accessorKey: "day",
+    header: "Day",
+  },
+  {
+    id: "time",
+    header: "Time",
+    accessorFn: (row) => {
+      const minutes = row.time;
+      const timeFormat = minToTimeFormat(minutes);
+      return timeFormat;
+    },
+  },
+  {
+    id: "duration",
+    header: "Duration",
+    accessorFn: (row) => `${row.duration} min`,
+  },
+  {
+    id: "instructor",
+    header: "Instructor",
+    cell: ({ row }) => {
+      const instructor = row.original.instructor;
+      return instructor.map((instructor) => (
+        <InstructorCell key={instructor} instructorId={instructor} />
+      ));
+    },
+  },
+  {
+    accessorKey: "room",
+    header: "Room",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const studentRow = row.original;
+      const classItem = row.original;
 
       return (
         <DropdownMenu>
@@ -159,13 +170,9 @@ export const columns: ColumnDef<Students>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(studentRow._id)}
+              onClick={() => navigator.clipboard.writeText(classItem._id)}
             >
-              Copy Student ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              {/* <DeleteButton rowId={taskItem._id} /> */}
+              Copy Class ID
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
