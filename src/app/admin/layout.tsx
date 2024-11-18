@@ -21,7 +21,7 @@ export default function AdminDashboardLayout({
   if (!role?.includes("admin")) {
     return (
       <div className="flex h-screen w-full items-center justify-center px-4">
-        <Card className="p-8 flex flex-col border-none gap-4 justify-center">
+        <Card className="flex flex-col justify-center gap-4 border-none p-8">
           <LoaderCircle className="animate-spin" />
           {/* <div className="flex items-center flex-row gap-2 align-middle"> */}
           {/*   <CircleSlash size={36} /> */}

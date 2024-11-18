@@ -1,69 +1,62 @@
-import { ThemeToggle } from "@/components/theme-toggle";
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { UserIcon } from "lucide-react";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { Header } from "@/components/header";
+import { useEffect, useState } from "react";
+import { getStudents, getUserData } from "./actions";
+import { Skeleton } from "@/components/ui/skeleton";
 
-async function getUserData(id: Id<"users">) {
-  const request = {
-    path: "users:getUserById",
-    args: { id: id },
-    format: "json",
-  };
-  const res = await fetch(`${process.env.NEXT_PUBLIC_CONVEX_URL}/api/query`, {
-    method: "POST",
-    body: JSON.stringify(request),
-    headers: { "Content-Type": "application/json" },
-  });
+export default function UserPage({ params }: { params: { id: Id<"users"> } }) {
+  const router = useRouter();
 
-  if (!res.ok) return null;
+  const [user, setUser] = useState<any>(null); // Adjust type as needed
+  const [students, setStudents] = useState<any[]>([]); // Adjust type as needed
+  const [loading, setLoading] = useState(true);
 
-  return await res.json();
-}
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
 
-async function getStudents(id: Id<"users">[]) {
-  const request = {
-    path: "students:getStudentsByAccount",
-    args: { id: id },
-    format: "json",
-  };
-  const res = await fetch(`${process.env.NEXT_PUBLIC_CONVEX_URL}/api/query`, {
-    method: "POST",
-    body: JSON.stringify(request),
-    headers: { "Content-Type": "application/json" },
-  });
+        // Fetch class data
+        const resData = await getUserData(params.id);
+        if (!resData?.value) {
+          // router.push("/404"); // Redirect to a 404 page
+          return;
+        }
+        setUser(resData.value);
 
-  if (!res.ok) return null;
+        // Fetch associated students
+        const studentsData = await getStudents([params.id]);
+        setStudents(studentsData?.value || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        router.push("/error"); // Redirect to a generic error page
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  return await res.json();
-}
+    fetchData();
+  }, [params.id, router]);
 
-export default async function UserPage({
-  params,
-}: {
-  params: { id: Id<"users"> };
-}) {
-  const resData = await getUserData(params.id);
-  const user = resData.value;
-
-  const idArray = [];
-  idArray.push(params.id);
-
-  const studentsData = await getStudents(idArray);
-  const students = studentsData.value;
-  console.log(students);
+  if (loading) {
+    return (
+      <div className="flex items-center space-x-4 p-20">
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     notFound(); // This will render a 404 page
@@ -71,32 +64,13 @@ export default async function UserPage({
 
   return (
     <>
-      <header className="group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/admin/clientele">
-                  Clientele
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{user.name}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-        <div className="px-4">
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header
+        breadcrumbs={[
+          { title: "Dashboard", url: "/admin" },
+          { title: "Clientele", url: "/admin/clientele" },
+        ]}
+        currentPage={user.name}
+      />
       <div className="flex flex-row items-end gap-6 p-12">
         <Avatar className="h-32 w-32 rounded-full">
           <AvatarImage src={user?.image} alt={user?.name} />

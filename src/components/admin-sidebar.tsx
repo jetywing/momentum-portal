@@ -26,6 +26,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { ThemeToggle } from "./theme-toggle";
 
 // part of the example code, not sure what it was for
 // import { title } from "process";
@@ -211,7 +212,7 @@ export function AdminSidebar({
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <ThemeToggle />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -11,30 +11,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { dayTimeFormat, minToTimeFormat } from "@/lib/utils";
 import Link from "next/link";
-import { useQuery } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-
-function InstructorCell({ instructorId }: { instructorId: Id<"users"> }) {
-  const instructor = useQuery(api.users.getUserById, { id: instructorId });
-
-  if (!instructor) {
-    return <span>loading...</span>;
-  }
-
-  return (
-    <Link
-      className="duration-150 hover:opacity-60"
-      href={`/admin/clientele/${instructor._id}`}
-    >
-      {instructor.name}
-    </Link>
-  );
-}
+// import { useMutation } from "convex/react";
+// import { api } from "../../../../convex/_generated/api";
+// import { Id } from "../../../../convex/_generated/dataModel";
 
 // const DeleteButton = ({ rowId }: { rowId: Id<"tasks"> }) => {
 //   const deleteRow = useMutation(api.tasks.deleteTask);
@@ -54,20 +38,22 @@ function InstructorCell({ instructorId }: { instructorId: Id<"users"> }) {
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Classes = {
+export type Clients = {
   _id: string;
-  name: string;
-  description?: string;
-  type?: string;
-  capacity?: number;
-  room?: string;
-  time: number; // Assuming it's a UTC timestamp or similar
-  duration: number; // Duration in minutes or another unit
-  season?: string;
-  students?: string[]; // Array of `students` IDs as strings
-  instructor: Id<"users">[]; // Array of `users` IDs as strings
+  _creationTime: number;
+  userId?: string; // Optional user ID
+  name?: string; // Optional name
+  image?: string; // Optional image URL
+  email?: string; // Optional email address
+  emailVerificationTime?: number; // Optional email verification timestamp
+  phone?: string; // Optional phone number
+  phoneVerificationTime?: number; // Optional phone verification timestamp
+  isAnonymous?: boolean; // Optional flag indicating if the user is anonymous
+  roles?: Array<"client" | "staff" | "admin">; // Optional array of roles
+  students?: Array<Id<"students">>; // Optional array of associated student IDs
 };
-export const columns: ColumnDef<Classes>[] = [
+
+export const columns: ColumnDef<Clients>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -91,7 +77,16 @@ export const columns: ColumnDef<Classes>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    id: "name",
+    accessorFn: (row) => `${row.name}`,
+    cell: ({ row }) => {
+      const client = row.original;
+      return (
+        <Button variant={"ghost"} className="px-2 py-1" asChild>
+          <Link href={"/admin/clientele/" + client._id}>{client.name}</Link>
+        </Button>
+      );
+    },
     header: ({ column }) => {
       return (
         <Button
@@ -100,71 +95,59 @@ export const columns: ColumnDef<Classes>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const thisClass = row.original;
-      return (
-        <Button variant={"ghost"} className="px-2 py-1" asChild>
-          <Link href={"/admin/classes/" + thisClass._id}>{thisClass.name}</Link>
+          <ArrowUpDown className="ml-1 h-4 w-4" />
         </Button>
       );
     },
   },
   {
-    id: "capacity",
-    header: "Capacity",
+    id: "phone",
+    header: "Phone",
     cell: ({ row }) => {
-      const classItem = row.original;
-      const studentCount = classItem.students?.length;
-      return `${studentCount}/${classItem.capacity}`;
-    },
-  },
-  {
-    id: "time",
-    accessorFn: (row) => {
-      const minutes = row.time;
-      const timeFormat = dayTimeFormat(minutes);
-      return timeFormat;
-    },
-    header: ({ column }) => {
+      const clientPhone = row.original.phone;
+
+      if (!clientPhone) {
+        return <span className="text-muted-foreground">no phone</span>;
+      }
+
       return (
         <Button
-          variant="ghost"
-          className="p-1"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant={"link"}
+          className="px-0"
+          title="Copy Email"
+          onClick={() => navigator.clipboard.writeText(clientPhone)}
         >
-          Time
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          {clientPhone}
         </Button>
       );
     },
   },
   {
-    id: "duration",
-    header: "Duration",
-    accessorFn: (row) => `${row.duration} min`,
-  },
-  {
-    id: "instructor",
-    header: "Instructor",
+    id: "email",
+    header: "Email",
     cell: ({ row }) => {
-      const instructor = row.original.instructor;
-      return instructor.map((instructor) => (
-        <InstructorCell key={instructor} instructorId={instructor} />
-      ));
+      const clientEmail = row.original.email;
+
+      if (!clientEmail) {
+        return <span className="text-muted-foreground">no email</span>;
+      }
+
+      return (
+        <Button
+          variant={"link"}
+          className="px-0"
+          title="Copy Email"
+          onClick={() => navigator.clipboard.writeText(clientEmail)}
+        >
+          {clientEmail}
+        </Button>
+      );
     },
-  },
-  {
-    accessorKey: "room",
-    header: "Room",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const classItem = row.original;
+      const clientRow = row.original;
 
       return (
         <DropdownMenu>
@@ -177,9 +160,13 @@ export const columns: ColumnDef<Classes>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(classItem._id)}
+              onClick={() => navigator.clipboard.writeText(clientRow._id)}
             >
-              Copy Class ID
+              Copy Client ID
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              {/* <DeleteButton rowId={taskItem._id} /> */}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

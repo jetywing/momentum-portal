@@ -62,6 +62,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Label } from "@/components/ui/label";
+import { Header } from "@/components/header";
 
 const formSchema = z.object({
   firstName: z
@@ -102,35 +103,20 @@ export default function CreateStudentPage() {
       birthday: birthday as string,
       account: values.account as Id<"users">,
     });
+    // TODO: check for successful submission show loading spinner in button
+    // before pushing to new students page.
     router.push("/admin/students");
   }
 
   return (
     <>
-      <header className="group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/admin/students">Students</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Create</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-        <div className="px-4">
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header
+        breadcrumbs={[
+          { title: "Dashboard", url: "/admin" },
+          { title: "Students", url: "/admin/students" },
+        ]}
+        currentPage="Create"
+      />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 p-8 md:min-h-min">
           <h1 className="text-4xl">New Student</h1>

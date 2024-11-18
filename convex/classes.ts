@@ -12,6 +12,8 @@ export const getClassById = query({
 export const getAllClasses = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("classes").order("desc").collect();
+    const classes = await ctx.db.query("classes").collect();
+    const orderedClasses = classes.sort((a, b) => a.time - b.time);
+    return orderedClasses;
   },
 });
