@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, LinkIcon } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Id } from "../../../../convex/_generated/dataModel";
 // import { useMutation } from "convex/react";
 // import { api } from "../../../../convex/_generated/api";
 // import { Id } from "../../../../convex/_generated/dataModel";
@@ -36,6 +37,26 @@ import { Badge } from "@/components/ui/badge";
 //   return <button onClick={handleDelete}>Delete</button>;
 // };
 
+// function AccountCell({ accountId }: { accountId: Id<"users">[] }) {
+//   const account = useQuery(api.users.getUsersByFromArray, { idArray: accountId });
+//
+//   if (!account) {
+//     return <span>loading...</span>;
+//   }
+//
+//   return (
+//     account.map((account) =>(
+//       <Link
+//         key={account}
+//         className="duration-150 hover:opacity-60"
+//         href={`/admin/clientele/${account._id}`}
+//       >
+//         {account.name}
+//       </Link>
+//     ))
+//   );
+// }
+//
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Students = {
@@ -44,6 +65,7 @@ export type Students = {
   lastName: string;
   birthday: string;
   team: string;
+  account: Id<"users">;
 };
 
 export const columns: ColumnDef<Students>[] = [

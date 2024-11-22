@@ -11,6 +11,7 @@ import { Header } from "@/components/header";
 import { useEffect, useState } from "react";
 import { getStudents, getUserData } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 export default function UserPage({ params }: { params: { id: Id<"users"> } }) {
   const router = useRouter();
@@ -98,12 +99,14 @@ export default function UserPage({ params }: { params: { id: Id<"users"> } }) {
               lastName: string;
               team: string[];
             }) => (
-              <Card key={_id} className="p-8">
-                <p key={_id}>
-                  {firstName} {lastName}
-                </p>
-                <Badge key={_id}>{team}</Badge>
-              </Card>
+              <Link key={_id} href={`/admin/students/${_id}`}>
+                <Card className="p-8 duration-150 hover:bg-gray-50 dark:hover:bg-gray-900">
+                  <p key={_id}>
+                    {firstName} {lastName}
+                  </p>
+                  <Badge key={_id}>{team}</Badge>
+                </Card>
+              </Link>
             ),
           )}
         </div>

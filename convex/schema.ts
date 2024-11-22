@@ -57,6 +57,18 @@ const schema = defineSchema({
     students: v.optional(v.array(v.id("students"))),
     instructor: v.array(v.id("users")),
   }),
+  classStudents: defineTable({
+    studentId: v.id("students"),
+    classId: v.id("classes"),
+  })
+    .index("by_studentId", ["studentId"])
+    .index("by_classId", ["classId"]),
+  logs: defineTable({
+    message: v.string(),
+    userId: v.optional(v.id("users")),
+    studentId: v.optional(v.id("students")),
+    classId: v.optional(v.id("classes")),
+  }),
   tasks: defineTable({
     isCompleted: v.boolean(),
     text: v.string(),

@@ -24,26 +24,17 @@ export const getUser = query({
 export const addStudentToClass = mutation({
   args: { studentId: v.id("students"), classId: v.id("classes") },
   handler: async (ctx, args) => {
-    const { classId } = args;
-    const classData = await ctx.db.get(classId);
-    if (!classData) {
-      return null;
-    }
+    const student = ctx.db.get(args.studentId);
+    const thisClass = ctx.db.get(args.classId);
 
-    const students = classData.students || [];
-    const updatedStudents = [...students, args.studentId];
-    const studentData = await ctx.db.get(args.studentId);
-
-    if (!studentData) {
-      return null;
-    }
-
-    const studentClasses = studentData.classes || [];
-    const updatedStudentClasses = [...studentClasses, classId];
-
-    await ctx.db.patch(classId, { students: updatedStudents });
-    await ctx.db.patch(args.studentId, { classes: updatedStudentClasses });
-
-    return;
+    await ctx.db.insert("classStudents", {
+      studentId: args.studentId,
+      classId: args.classId,
+    });
+    await ctx.db.insert("logs", {
+      studentId: args.studentId,
+      classId: args.classId,
+      message: `${student.firstName} ${student.lastName} was added to ${thisClass.name}`,
+    });
   },
 });

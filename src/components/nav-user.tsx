@@ -5,8 +5,6 @@ import {
   Bell,
   ChevronsUpDown,
   CreditCard,
-  LogOut,
-  Sparkles,
   UserIcon,
 } from "lucide-react";
 

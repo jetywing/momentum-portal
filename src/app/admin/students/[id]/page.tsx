@@ -5,16 +5,58 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { UserIcon } from "lucide-react";
 import { notFound, useRouter } from "next/navigation";
-import { getStudentData } from "./actions";
+import { getClassesForStudent, getStudentData } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { toast, Toaster } from "sonner";
+import { Id } from "../../../../../convex/_generated/dataModel";
+import { Toaster } from "sonner";
 
-export default function StudentPage({ params }: { params: { id: string } }) {
+type Student = {
+  _id: Id<"students">;
+  _creationTime: number;
+  idx?: number; // Optional index
+  firstName: string; // Required first name
+  lastName: string; // Required last name
+  image?: string; // Optional image URL
+  status: boolean; // Active status (e.g., enrolled or not)
+  birthday?: string; // Optional birthday (e.g., "YYYY-MM-DD" or other format)
+  team?: ("mdp" | "mdp2" | "club")[]; // Optional array of team names
+  classes?: Id<"classes">[]; // Optional array of class IDs
+  account?: Id<"users">[]; // Optional array of account/user IDs
+  isAccHolder: boolean; // Whether the student is the account holder
+};
+
+type Class = {
+  _id: Id<"classes">;
+  name: string;
+  description?: string;
+  type?: "team" | "rec";
+  room?: string;
+  day:
+    | "Monday"
+    | "Tuesday"
+    | "Wednesday"
+    | "Thursday"
+    | "Friday"
+    | "Saturday"
+    | "Sunday";
+  time: number; // Minutes since midnight
+  duration: number; // Duration in minutes
+  season?: string;
+  capacity?: number;
+  students?: Id<"students">[];
+  instructor: Id<"users">[];
+};
+
+export default function StudentPage({
+  params,
+}: {
+  params: { id: Id<"students"> };
+}) {
   const router = useRouter();
 
-  const [student, setStudent] = useState<any[]>([]); // Adjust type as needed
+  const [student, setStudent] = useState<Student | null>(null);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,15 +64,16 @@ export default function StudentPage({ params }: { params: { id: string } }) {
       try {
         setLoading(true);
 
-        // Fetch class data
+        // Fetch student data
         const resData = await getStudentData(params.id);
         if (!resData?.value) {
-          // router.push("/404"); // Redirect to a 404 page
+          router.push("/404"); // Redirect to a 404 page
           return;
         }
         setStudent(resData.value);
 
-        // Fetch associated students
+        const classData = await getClassesForStudent(params.id);
+        setClasses(classData?.value || []);
       } catch (error) {
         console.error("Error fetching data:", error);
         router.push("/error"); // Redirect to a generic error page
@@ -41,6 +84,8 @@ export default function StudentPage({ params }: { params: { id: string } }) {
 
     fetchData();
   }, [params.id, router]);
+
+  console.log(classes);
 
   if (loading) {
     return (
@@ -58,20 +103,17 @@ export default function StudentPage({ params }: { params: { id: string } }) {
     notFound(); // This will render a 404 page
   }
 
-  const birthday = new Date(student.birthday);
-  const formattedBirthday = birthday.toLocaleDateString();
-
-  const handleToast = () => {
-    console.log("why no");
-    toast("it work", {
-      description: "like this?",
-      action: {
-        label: "log",
-        onClick: () => console.log("wow"),
-      },
-    });
-  };
-
+  // const handleToast = () => {
+  //   console.log("why no");
+  //   toast("it work", {
+  //     description: "like this?",
+  //     action: {
+  //       label: "log",
+  //       onClick: () => console.log("wow"),
+  //     },
+  //   });
+  // };
+  //
   return (
     <>
       <Header
@@ -83,7 +125,7 @@ export default function StudentPage({ params }: { params: { id: string } }) {
       />
       <div className="flex flex-row items-end gap-6 p-12">
         <Avatar className="h-32 w-32 rounded-full">
-          <AvatarImage src={student?.image} alt={student?.name} />
+          <AvatarImage src={student?.image} alt={student?.firstName} />
           <AvatarFallback className="rounded-lg">
             <UserIcon size={64} />
           </AvatarFallback>
@@ -92,15 +134,20 @@ export default function StudentPage({ params }: { params: { id: string } }) {
           <h1 className="text-3xl font-semibold">
             {student.firstName} {student.lastName}
           </h1>
-          <p>Birthday: {formattedBirthday}</p>
+          <p>
+            Birthday:{" "}
+            {student.birthday
+              ? new Date(student.birthday).toLocaleDateString()
+              : "n/a"}
+          </p>
         </div>
       </div>
       <Separator className="my-12 mb-8" />
-      <div>
-        <Button variant={"outline"} onClick={() => handleToast()}>
-          TOAST
-        </Button>
-      </div>
+      {classes?.map((c) => (
+        <div key={c._id} className="bg-red p-4">
+          <p>{c.name}</p>
+        </div>
+      ))}
       <Toaster />
     </>
   );

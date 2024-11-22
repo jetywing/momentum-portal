@@ -17,7 +17,7 @@ export async function getClassData(id: Id<"classes">) {
   return await res.json();
 }
 
-export async function getStudents(id: Id<"classes">[]) {
+export async function getStudents(id: Id<"classes">) {
   const request = {
     path: "students:getStudentsByClass",
     args: { id: id },

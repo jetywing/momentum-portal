@@ -17,3 +17,15 @@ export const getAllClasses = query({
     return orderedClasses;
   },
 });
+
+// export const getClassesByStudent = query({
+//   args: { studentId: v.id("students") },
+//   handler: async (ctx, args) => {
+//     const student = await ctx.db.get(args.studentId);
+//     const classIds = student?.classes;
+//
+//     console.log(student);
+//
+//     return await ctx.db.query("classes"){.collect();
+//   },
+// });

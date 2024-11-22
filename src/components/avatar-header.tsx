@@ -17,17 +17,22 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function AvatarHeader() {
   const user = useQuery(api.functions.currentUser);
+
+  const isMobile = useIsMobile();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size="lg" variant={"ghost"} className="px-2 py-0">
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{user?.name}</span>
-          </div>
+          {!isMobile ? (
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">{user?.name}</span>
+            </div>
+          ) : null}
           <Separator orientation="vertical" className="h-6" />
           <Avatar className="h-8 w-8 rounded-full">
             <AvatarImage src={user?.image} alt={user?.name} />

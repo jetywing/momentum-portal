@@ -27,16 +27,22 @@ export const getStudentsByAccount = query({
 });
 
 export const getStudentsByClass = query({
-  args: { id: v.array(v.id("classes")) },
+  args: { id: v.id("classes") },
   handler: async (ctx, args) => {
-    return ctx.db
-      .query("students")
-      .filter((q) => q.eq(q.field("classes"), args.id))
+    const studentClasses = await ctx.db
+      .query("classStudents")
+      .withIndex("by_classId", (q) => q.eq("classId", args.id))
       .collect();
+
+    const students = await Promise.all(
+      studentClasses.map(async (sc) => ctx.db.get(sc.studentId)),
+    );
+
+    return students;
   },
 });
 
-export const addStudent = mutation({
+export const createStudent = mutation({
   args: {
     firstName: v.string(),
     lastName: v.string(),
@@ -44,12 +50,24 @@ export const addStudent = mutation({
     account: v.id("users"),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("students", {
+    const account = ctx.db.get(args.account);
+    if (!account) {
+      return null;
+    }
+
+    const accStudents = account.students || [];
+
+    const newStudent = await ctx.db.insert("students", {
       firstName: args.firstName,
       lastName: args.lastName,
       status: true,
       birthday: args.birthday,
       isAccHolder: false,
+      account: [args.account],
     });
+
+    const updatedStudents = [...accStudents, newStudent];
+
+    await ctx.db.patch(args.account, { students: updatedStudents });
   },
 });

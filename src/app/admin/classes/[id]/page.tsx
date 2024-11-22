@@ -8,30 +8,68 @@ import { Badge } from "@/components/ui/badge";
 import { getClassData, getStudents } from "./actions";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMutation } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
-import { Button } from "@/components/ui/button";
 import { dayTimeFormat } from "@/lib/utils";
 import { Header } from "@/components/header";
+import { AddStudentDialog } from "@/components/add-student-dialog";
+import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+type Class = {
+  _id: Id<"classes">;
+  name: string;
+  description?: string;
+  type?: "team" | "rec";
+  room?: string;
+  day:
+    | "Monday"
+    | "Tuesday"
+    | "Wednesday"
+    | "Thursday"
+    | "Friday"
+    | "Saturday"
+    | "Sunday";
+  time: number; // Minutes since midnight
+  duration: number; // Duration in minutes
+  season?: string;
+  capacity?: number; // Maximum capacity for the class
+  students?: Id<"students">[]; // Array of student IDs
+  instructor: Id<"users">[]; // Array of instructor IDs
+};
+
+type Student = {
+  _id: Id<"students">;
+  idx?: number; // Optional index
+  firstName: string; // Required first name
+  lastName: string; // Required last name
+  image?: string; // Optional image URL
+  status: boolean; // Active status (e.g., enrolled or not)
+  birthday?: string; // Optional birthday (e.g., "YYYY-MM-DD" or other format)
+  team?: ("mdp" | "mdp2" | "club")[]; // Optional array of team names
+  classes?: Id<"classes">[]; // Optional array of class IDs
+  account?: Id<"users">[]; // Optional array of account/user IDs
+  isAccHolder: boolean; // Whether the student is the account holder
+};
 
 export default function ThisClassPage({
   params,
 }: {
   params: { id: Id<"classes"> };
 }) {
-  const addStudentToClass = useMutation(api.functions.addStudentToClass);
-
-  const handleClick = (classId: Id<"classes">) => {
-    addStudentToClass({
-      studentId: "k97dt8zzemx800g863pys0abmx74ecb2",
-      classId: classId,
-    });
-  };
-
   const router = useRouter();
 
-  const [thisClass, setThisClass] = useState<any>(null); // Adjust type as needed
-  const [students, setStudents] = useState<any[]>([]); // Adjust type as needed
+  const classId = params.id;
+
+  const [thisClass, setThisClass] = useState<Class | null>(null); // Adjust type as needed
+  const [students, setStudents] = useState<Student[]>([]); // Adjust type as needed
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +86,7 @@ export default function ThisClassPage({
         setThisClass(resData.value);
 
         // Fetch associated students
-        const studentsData = await getStudents([params.id]);
+        const studentsData = await getStudents(params.id);
         setStudents(studentsData?.value || []);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -73,6 +111,8 @@ export default function ThisClassPage({
     );
   }
 
+  console.log(students);
+
   if (!thisClass) {
     return <div>Class not found.</div>; // Fallback if the class data is missing
   }
@@ -88,7 +128,7 @@ export default function ThisClassPage({
         ]}
         currentPage={thisClass.name}
       />
-      <div className="flex flex-row items-end gap-6 p-12">
+      <div className="flex flex-row items-end gap-6 p-6 md:p-12">
         <div>
           <h1 className="text-3xl font-semibold">{thisClass.name}</h1>
           <p>Time: {dayTime}</p>
@@ -96,34 +136,50 @@ export default function ThisClassPage({
         </div>
       </div>
       <Separator className="my-12 mb-8" />
-      <div className="flex flex-col gap-4 px-20">
+      <div className="relative flex flex-col gap-4 px-2 md:px-20">
+        <div className="absolute right-2 top-2 md:right-20">
+          <AddStudentDialog classId={classId} />
+        </div>
         <h2 className="text-xl font-bold md:text-2xl">Class List</h2>
-        <Button onClick={() => handleClick(thisClass._id)}>add</Button>
-        <div className="flex flex-wrap gap-4">
-          {students.length > 0 ? (
-            students.map(
-              ({
-                _id,
-                firstName,
-                lastName,
-                team,
-              }: {
-                _id: Id<"students">;
-                firstName: string;
-                lastName: string;
-                team: string[];
-              }) => (
-                <Card key={_id} className="p-8">
-                  <p key={_id}>
-                    {firstName} {lastName}
-                  </p>
-                  <Badge key={_id}>{team}</Badge>
+        <div className="flex flex-wrap gap-4 py-4">
+          <Table>
+            <TableCaption>Current Class Roster</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Team</TableHead>
+                <TableHead>Method</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="min-h-96">
+              {students.length > 0 ? (
+                students.map((student) => (
+                  <TableRow key={student._id}>
+                    <TableCell className="font-medium">
+                      <Link
+                        href={`/admin/students/${student._id}`}
+                        className="duration-150 hover:opacity-60"
+                      >
+                        <p className="text-nowrap">
+                          {student.firstName} {student.lastName}
+                        </p>
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={"outline"}>{student.team}</Badge>
+                    </TableCell>
+                    <TableCell>Credit Card</TableCell>
+                    <TableCell className="text-right">$250.00</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <Card className="absolute inset-0 h-64">
+                  <p className="text-center">no students</p>
                 </Card>
-              ),
-            )
-          ) : (
-            <p>no students</p>
-          )}
+              )}
+            </TableBody>
+          </Table>
         </div>
       </div>
     </>

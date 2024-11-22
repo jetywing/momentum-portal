@@ -20,6 +20,13 @@ export const getUserById = query({
   },
 });
 
+export const getUsersByFromArray = query({
+  args: { idArray: v.optional(v.array(v.id("users"))) },
+  handler: async (ctx, args) => {
+    return args.idArray?.map((id) => ctx.db.get(id));
+  },
+});
+
 export const userIdQuery = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
