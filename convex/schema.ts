@@ -62,7 +62,8 @@ const schema = defineSchema({
     classId: v.id("classes"),
   })
     .index("by_studentId", ["studentId"])
-    .index("by_classId", ["classId"]),
+    .index("by_classId", ["classId"])
+    .index("by_studentId_classId", ["studentId", "classId"]),
   logs: defineTable({
     message: v.string(),
     userId: v.optional(v.id("users")),

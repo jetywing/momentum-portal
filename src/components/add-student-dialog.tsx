@@ -20,14 +20,38 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { UserPlus } from "lucide-react";
-import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 
 export function AddStudentDialog({ classId }: { classId: Id<"classes"> }) {
@@ -82,19 +106,26 @@ export function AddStudentDialog({ classId }: { classId: Id<"classes"> }) {
   );
 }
 
+const FormSchema = z.object({
+  studentId: z.string({ required_error: "Student is required" }),
+});
+
 function AddStudentForm({ classId }: { classId: Id<"classes"> }) {
-  const { pending } = useFormStatus();
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  });
 
   const router = useRouter();
 
-  const students = useQuery(api.students.getAllStudents);
-  console.log(students);
+  const unenrolledStudents = useQuery(api.students.getUnenrolledStudents, {
+    id: classId as Id<"classes">,
+  });
 
   const addStudent = useMutation(api.functions.addStudentToClass);
 
-  async function handleSubmit(formData: FormData) {
+  async function onSubmit(values: z.infer<typeof FormSchema>) {
     addStudent({
-      studentId: formData.get("studentId") as Id<"students">,
+      studentId: values.studentId as Id<"students">,
       classId: classId as Id<"classes">,
     });
 
@@ -102,19 +133,78 @@ function AddStudentForm({ classId }: { classId: Id<"classes"> }) {
   }
 
   return (
-    <form
-      action={handleSubmit}
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit(new FormData(e.currentTarget));
-      }}
-      className={cn("grid items-start gap-4 px-4 md:px-0")}
-    >
-      <div className="grid gap-2">
-        <Label>Student</Label>
-        <Input name="studentId" />
-      </div>
-      <Button disabled={pending}>Save changes</Button>
-    </form>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6 px-4 md:px-0"
+      >
+        <FormField
+          control={form.control}
+          name="studentId"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Student</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground",
+                      )}
+                    >
+                      {field.value
+                        ? unenrolledStudents?.find(
+                            (student) => student?._id === field.value,
+                          )?.firstName
+                        : "Select a student..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search students..." />
+                    <CommandList>
+                      <CommandEmpty>No students found.</CommandEmpty>
+                      <CommandGroup>
+                        {unenrolledStudents?.map((student) => (
+                          <CommandItem
+                            value={student?.firstName + " " + student?.lastName}
+                            key={student?._id}
+                            onSelect={() => {
+                              form.setValue("studentId", student?._id);
+                            }}
+                          >
+                            {student?.firstName + " " + student?.lastName}
+                            <Check
+                              className={cn(
+                                "ml-auto",
+                                student?._id === field.value
+                                  ? "opacity-100"
+                                  : "opacity-0",
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                Choose someone to add to this classlist.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button className="w-full" type="submit">
+          Submit
+        </Button>
+      </form>
+    </Form>
   );
 }

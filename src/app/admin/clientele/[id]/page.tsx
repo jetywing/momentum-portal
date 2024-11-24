@@ -1,8 +1,6 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { UserIcon } from "lucide-react";
 import { notFound, useRouter } from "next/navigation";
@@ -12,12 +10,44 @@ import { useEffect, useState } from "react";
 import { getStudents, getUserData } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+type User = {
+  _id: Id<"users">;
+  name: string;
+  email: string;
+  image?: string;
+};
+
+type Student = {
+  _id: Id<"students">;
+  idx?: number;
+  firstName: string;
+  lastName: string;
+  image?: string;
+  status: boolean;
+  birthday?: string;
+  team?: ("mdp" | "mdp2" | "club")[];
+  classes?: Id<"classes">[];
+  account?: Id<"users">[];
+  isAccHolder: boolean;
+};
 
 export default function UserPage({ params }: { params: { id: Id<"users"> } }) {
   const router = useRouter();
 
-  const [user, setUser] = useState<any>(null); // Adjust type as needed
-  const [students, setStudents] = useState<any[]>([]); // Adjust type as needed
+  const [user, setUser] = useState<User | null>(null); // Adjust type as needed
+  const [students, setStudents] = useState<Student[]>([]); // Adjust type as needed
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -86,29 +116,43 @@ export default function UserPage({ params }: { params: { id: Id<"users"> } }) {
       </div>
       <Separator className="my-12 mb-8" />
       <div className="flex flex-col gap-4 px-20">
+        <h2 className="text-2xl flex flex-col font-semibold">
+          Associated Students
+        </h2>
         <div className="flex flex-wrap gap-4">
-          {students?.map(
-            ({
-              _id,
-              firstName,
-              lastName,
-              team,
-            }: {
-              _id: Id<"students">;
-              firstName: string;
-              lastName: string;
-              team: string[];
-            }) => (
-              <Link key={_id} href={`/admin/students/${_id}`}>
-                <Card className="p-8 duration-150 hover:bg-gray-50 dark:hover:bg-gray-900">
-                  <p key={_id}>
-                    {firstName} {lastName}
-                  </p>
-                  <Badge key={_id}>{team}</Badge>
-                </Card>
-              </Link>
-            ),
-          )}
+          <Table>
+            <TableCaption>currently active students</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Team</TableHead>
+                <TableHead className="w-12">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="min-h-96">
+              {students.length > 0 ? (
+                students?.map((student) => (
+                  <TableRow key={student._id}>
+                    <TableCell>
+                      <Button variant="link" asChild>
+                        <Link href={`/admin/students/${student._id}`}>
+                          {student.firstName} {student.lastName}
+                        </Link>
+                      </Button>
+                    </TableCell>
+                    <TableCell>{student.team?.join(", ")}</TableCell>
+                    <TableCell>
+                      <MoreHorizontal className="mx-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={3}>No associated students</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
       </div>
     </>

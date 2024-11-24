@@ -42,6 +42,28 @@ export const getStudentsByClass = query({
   },
 });
 
+export const getUnenrolledStudents = query({
+  args: { id: v.id("classes") },
+  handler: async (ctx, args) => {
+    const studentClasses = await ctx.db
+      .query("classStudents")
+      .withIndex("by_classId", (q) => q.eq("classId", args.id))
+      .collect();
+
+    // find all students that are not in the class
+    const allStudents = await ctx.db.query("students").collect();
+    const studentsOutsideClass = allStudents.filter(
+      (s) => !studentClasses.some((sc) => sc.studentId === s._id),
+    );
+
+    const unenrolledStudents = await Promise.all(
+      studentsOutsideClass.map(async (sc) => ctx.db.get(sc._id)),
+    );
+
+    return unenrolledStudents;
+  },
+});
+
 export const createStudent = mutation({
   args: {
     firstName: v.string(),

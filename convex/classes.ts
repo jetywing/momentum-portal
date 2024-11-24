@@ -18,14 +18,18 @@ export const getAllClasses = query({
   },
 });
 
-// export const getClassesByStudent = query({
-//   args: { studentId: v.id("students") },
-//   handler: async (ctx, args) => {
-//     const student = await ctx.db.get(args.studentId);
-//     const classIds = student?.classes;
-//
-//     console.log(student);
-//
-//     return await ctx.db.query("classes"){.collect();
-//   },
-// });
+export const getClassesByStudent = query({
+  args: { id: v.id("students") },
+  handler: async (ctx, args) => {
+    const studentClasses = await ctx.db
+      .query("classStudents")
+      .withIndex("by_studentId", (q) => q.eq("studentId", args.id))
+      .collect();
+
+    const classes = await Promise.all(
+      studentClasses.map(async (sc) => ctx.db.get(sc.classId)),
+    );
+
+    return classes;
+  },
+});

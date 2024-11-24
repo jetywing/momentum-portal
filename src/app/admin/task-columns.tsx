@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
-const DeleteButton = ({ rowId }: { rowId: string }) => {
+const DeleteButton = ({ rowId }: { rowId: Id<"tasks"> }) => {
   const deleteRow = useMutation(api.tasks.deleteTask);
 
   const handleDelete = () => {

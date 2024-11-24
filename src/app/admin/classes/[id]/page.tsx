@@ -3,7 +3,6 @@
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { Id } from "../../../../../convex/_generated/dataModel";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getClassData, getStudents } from "./actions";
 import { useEffect, useState } from "react";
@@ -17,11 +16,11 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MoreHorizontal } from "lucide-react";
 
 type Class = {
   _id: Id<"classes">;
@@ -111,8 +110,6 @@ export default function ThisClassPage({
     );
   }
 
-  console.log(students);
-
   if (!thisClass) {
     return <div>Class not found.</div>; // Fallback if the class data is missing
   }
@@ -143,13 +140,12 @@ export default function ThisClassPage({
         <h2 className="text-xl font-bold md:text-2xl">Class List</h2>
         <div className="flex flex-wrap gap-4 py-4">
           <Table>
-            <TableCaption>Current Class Roster</TableCaption>
+            <TableCaption>Currently Enrolled Students</TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Team</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="w-12">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="min-h-96">
@@ -169,14 +165,20 @@ export default function ThisClassPage({
                     <TableCell>
                       <Badge variant={"outline"}>{student.team}</Badge>
                     </TableCell>
-                    <TableCell>Credit Card</TableCell>
-                    <TableCell className="text-right">$250.00</TableCell>
+                    <TableCell className="text-right">
+                      <MoreHorizontal className="mx-auto" />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
-                <Card className="absolute inset-0 h-64">
-                  <p className="text-center">no students</p>
-                </Card>
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    No students found
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>

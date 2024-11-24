@@ -9,7 +9,21 @@ import { getClassesForStudent, getStudentData } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { Id } from "../../../../../convex/_generated/dataModel";
-import { Toaster } from "sonner";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { MoreHorizontal } from "lucide-react";
+import Link from "next/link";
+import { dayTimeFormat } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
 
 type Student = {
   _id: Id<"students">;
@@ -47,6 +61,20 @@ type Class = {
   students?: Id<"students">[];
   instructor: Id<"users">[];
 };
+
+function AccountLink({ userId }: { userId: Id<"users"> }) {
+  const user = useQuery(api.users.getUserById, { id: userId });
+
+  if (!user) {
+    return <span>loading...</span>;
+  }
+
+  return (
+    <Link href={`/admin/clientele/${userId}`}>
+      <span className="duration-150 hover:opacity-60">{user.name}</span>
+    </Link>
+  );
+}
 
 export default function StudentPage({
   params,
@@ -123,32 +151,75 @@ export default function StudentPage({
         ]}
         currentPage={`${student.firstName} ${student.lastName}`}
       />
-      <div className="flex flex-row items-end gap-6 p-12">
-        <Avatar className="h-32 w-32 rounded-full">
-          <AvatarImage src={student?.image} alt={student?.firstName} />
-          <AvatarFallback className="rounded-lg">
-            <UserIcon size={64} />
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <h1 className="text-3xl font-semibold">
-            {student.firstName} {student.lastName}
-          </h1>
-          <p>
-            Birthday:{" "}
-            {student.birthday
-              ? new Date(student.birthday).toLocaleDateString()
-              : "n/a"}
-          </p>
+      <div className="flex flex-col gap-2 md:gap-16 md:flex-row">
+        <div className="flex flex-row items-end gap-6 p-12">
+          <Avatar className="h-32 w-32 rounded-full">
+            <AvatarImage src={student?.image} alt={student?.firstName} />
+            <AvatarFallback className="rounded-lg">
+              <UserIcon size={64} />
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-3xl font-semibold">
+              {student.firstName} {student.lastName}
+            </h1>
+            <p>
+              Birthday:{" "}
+              {student.birthday
+                ? new Date(student.birthday).toLocaleDateString()
+                : "n/a"}
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-4 p-12">
+          <h3 className="text-xl font-semibold">Account</h3>
+          {student.account?.map((a) => <AccountLink key={a} userId={a} />)}
         </div>
       </div>
       <Separator className="my-12 mb-8" />
-      {classes?.map((c) => (
-        <div key={c._id} className="bg-red p-4">
-          <p>{c.name}</p>
+      <div className="relative flex flex-col gap-4 px-2 md:px-20">
+        <h2 className="text-xl font-bold md:text-2xl">Classes</h2>
+        <div className="flex flex-wrap gap-4 py-4">
+          <Table>
+            <TableCaption>Currently Enrolled Classes</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Time</TableHead>
+                <TableHead className="w-12">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="min-h-96">
+              {classes.length > 0 ? (
+                classes?.map((c) => (
+                  <TableRow key={c._id} className="bg-red p-4">
+                    <TableCell className="font-medium">
+                      <Button variant="link" className="p-0">
+                        <Link href={`/admin/classes/${c._id}`}>
+                          <p>{c.name}</p>
+                        </Link>
+                      </Button>
+                    </TableCell>
+                    <TableCell>{dayTimeFormat(c.time)}</TableCell>
+                    <TableCell className="text-right">
+                      <MoreHorizontal className="mx-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    No classes found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
-      ))}
-      <Toaster />
+      </div>
     </>
   );
 }
