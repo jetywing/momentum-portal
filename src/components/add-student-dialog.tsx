@@ -52,7 +52,6 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { UserPlus } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export function AddStudentDialog({ classId }: { classId: Id<"classes"> }) {
   const [open, setOpen] = React.useState(false);
@@ -70,9 +69,7 @@ export function AddStudentDialog({ classId }: { classId: Id<"classes"> }) {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Add Student</DialogTitle>
-            <DialogDescription>
-              Choose someone to add to this classlist
-            </DialogDescription>
+            <DialogDescription>The more the merrier.</DialogDescription>
           </DialogHeader>
           <AddStudentForm classId={classId} />
         </DialogContent>
@@ -91,9 +88,7 @@ export function AddStudentDialog({ classId }: { classId: Id<"classes"> }) {
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>Edit profile</DrawerTitle>
-          <DrawerDescription>
-            Choose someone to add to this classlist
-          </DrawerDescription>
+          <DrawerDescription>The more the merrier.</DrawerDescription>
         </DrawerHeader>
         <AddStudentForm classId={classId} />
         <DrawerFooter className="pt-2">
@@ -115,8 +110,6 @@ function AddStudentForm({ classId }: { classId: Id<"classes"> }) {
     resolver: zodResolver(FormSchema),
   });
 
-  const router = useRouter();
-
   const unenrolledStudents = useQuery(api.students.getUnenrolledStudents, {
     id: classId as Id<"classes">,
   });
@@ -124,12 +117,16 @@ function AddStudentForm({ classId }: { classId: Id<"classes"> }) {
   const addStudent = useMutation(api.functions.addStudentToClass);
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
-    addStudent({
+    const newStudent = await addStudent({
       studentId: values.studentId as Id<"students">,
       classId: classId as Id<"classes">,
     });
 
-    router.refresh();
+    if (!newStudent) {
+      return;
+    }
+
+    window.location.reload();
   }
 
   return (
@@ -195,7 +192,7 @@ function AddStudentForm({ classId }: { classId: Id<"classes"> }) {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                Choose someone to add to this classlist.
+                Choose from this list of currently unenrolled students.
               </FormDescription>
               <FormMessage />
             </FormItem>

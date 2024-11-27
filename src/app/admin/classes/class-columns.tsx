@@ -36,26 +36,26 @@ function InstructorCell({ instructorId }: { instructorId: Id<"users"> }) {
   );
 }
 
-// const DeleteButton = ({ rowId }: { rowId: Id<"tasks"> }) => {
-//   const deleteRow = useMutation(api.tasks.deleteTask);
-//
-//   const handleDelete = () => {
-//     deleteRow({ id: rowId })
-//       .then(() => {
-//         console.log(`Row ${rowId} deleted`);
-//       })
-//       .catch((error) => {
-//         console.error("Failed to delete row:", error);
-//       });
-//   };
-//
-//   return <button onClick={handleDelete}>Delete</button>;
-// };
+function CapacityCell({
+  classId,
+  capacity,
+}: {
+  classId: Id<"classes">;
+  capacity: number;
+}) {
+  const students = useQuery(api.students.getStudentsByClass, { id: classId });
+
+  if (!students) {
+    return <span>loading...</span>;
+  }
+  return `${students.length}/${capacity}`;
+}
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Classes = {
-  _id: string;
+  _id: Id<"classes">;
+  _creationTime: number;
   name: string;
   description?: string;
   type?: string;
@@ -64,7 +64,7 @@ export type Classes = {
   time: number; // Assuming it's a UTC timestamp or similar
   duration: number; // Duration in minutes or another unit
   season?: string;
-  students?: string[]; // Array of `students` IDs as strings
+  students?: Id<"students">[]; // Array of `students` IDs as strings
   instructor: Id<"users">[]; // Array of `users` IDs as strings
 };
 export const columns: ColumnDef<Classes>[] = [
@@ -118,8 +118,12 @@ export const columns: ColumnDef<Classes>[] = [
     header: "Capacity",
     cell: ({ row }) => {
       const classItem = row.original;
-      const studentCount = classItem.students?.length;
-      return `${studentCount}/${classItem.capacity}`;
+      return (
+        <CapacityCell
+          classId={classItem._id}
+          capacity={classItem.capacity as number}
+        />
+      );
     },
   },
   {

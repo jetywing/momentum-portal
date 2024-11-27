@@ -14,7 +14,6 @@ import {
 
 import { NavMain } from "@/components/nav-main";
 // import { NavProjects } from "@/components/nav-projects";
-import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
@@ -87,7 +86,7 @@ const data = {
         },
         {
           title: "Create",
-          url: "#",
+          url: "/admin/classes/create",
         },
         {
           title: "Settings",
@@ -143,24 +142,16 @@ const data = {
     },
     {
       title: "Analytics",
-      url: "#",
+      url: "/admin/analytics",
       icon: ChartColumn,
       items: [
         {
-          title: "Email",
-          url: "#",
+          title: "Overview",
+          url: "/admin/analytics",
         },
         {
-          title: "Text",
-          url: "#",
-        },
-        {
-          title: "Chat",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          title: "Logs",
+          url: "/admin/analytics/logs",
         },
       ],
     },

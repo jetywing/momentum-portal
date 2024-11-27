@@ -1,4 +1,8 @@
+import { revalidatePath } from "next/cache";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
+import { z } from "zod";
 
 export async function getClassData(id: Id<"classes">) {
   const request = {
@@ -33,3 +37,20 @@ export async function getStudents(id: Id<"classes">) {
 
   return await res.json();
 }
+
+// const FormSchema = z.object({
+//   studentId: z.string({ required_error: "Student is required" }),
+// });
+//
+// export async function addStudentToClassAction(values: z.infer<typeof FormSchema>) {
+//
+//   const addStudent = useMutation(api.functions.addStudentToClass);
+//
+//     addStudent({
+//       studentId: values.studentId as Id<"students">,
+//       classId: classId as Id<"classes">,
+//     });
+//
+//     revalidatePath("/admin/classes/[id]", "page");
+//   }
+//

@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 export const getClassById = query({
   args: { id: v.id("classes") },
@@ -31,5 +31,33 @@ export const getClassesByStudent = query({
     );
 
     return classes;
+  },
+});
+
+export const createClass = mutation({
+  args: {
+    name: v.string(),
+    time: v.number(),
+    duration: v.number(),
+    season: v.optional(v.string()),
+    capacity: v.optional(v.number()),
+    room: v.optional(v.string()),
+    description: v.optional(v.string()),
+    type: v.optional(v.union(v.literal("team"), v.literal("rec"))),
+    instructor: v.array(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    const newClass = await ctx.db.insert("classes", {
+      name: args.name,
+      time: args.time,
+      duration: args.duration,
+      season: args.season,
+      capacity: args.capacity,
+      room: args.room,
+      description: args.description,
+      type: args.type,
+      instructor: args.instructor,
+    });
+    return newClass;
   },
 });

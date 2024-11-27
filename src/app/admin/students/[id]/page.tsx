@@ -20,10 +20,11 @@ import {
 } from "@/components/ui/table";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { dayTimeFormat } from "@/lib/utils";
+import { calcAge, dayTimeFormat } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import { Card } from "@/components/ui/card";
 
 type Student = {
   _id: Id<"students">;
@@ -151,8 +152,8 @@ export default function StudentPage({
         ]}
         currentPage={`${student.firstName} ${student.lastName}`}
       />
-      <div className="flex flex-col gap-2 md:gap-16 md:flex-row">
-        <div className="flex flex-row items-end gap-6 p-12">
+      <div className="flex justify-between px-2 md:px-16 flex-col gap-2 md:gap-16 md:flex-row">
+        <div className="flex flex-row items-end gap-6 p-2">
           <Avatar className="h-32 w-32 rounded-full">
             <AvatarImage src={student?.image} alt={student?.firstName} />
             <AvatarFallback className="rounded-lg">
@@ -169,12 +170,13 @@ export default function StudentPage({
                 ? new Date(student.birthday).toLocaleDateString()
                 : "n/a"}
             </p>
+            <p>Age: {student.birthday ? calcAge(student.birthday) : "?"}</p>
           </div>
         </div>
-        <div className="flex flex-col gap-4 p-12">
+        <Card className="flex flex-col gap-4 py-4 px-8 w-full md:w-1/3 lg:w-1/2">
           <h3 className="text-xl font-semibold">Account</h3>
           {student.account?.map((a) => <AccountLink key={a} userId={a} />)}
-        </div>
+        </Card>
       </div>
       <Separator className="my-12 mb-8" />
       <div className="relative flex flex-col gap-4 px-2 md:px-20">

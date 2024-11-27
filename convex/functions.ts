@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { dayTimeFormat } from "@/lib/utils";
 
 export const currentUser = query({
   args: {},
@@ -24,8 +25,14 @@ export const getUser = query({
 export const addStudentToClass = mutation({
   args: { studentId: v.id("students"), classId: v.id("classes") },
   handler: async (ctx, args) => {
-    const student = ctx.db.get(args.studentId);
-    const thisClass = ctx.db.get(args.classId);
+    const student = await ctx.db.get(args.studentId);
+    const thisClass = await ctx.db.get(args.classId);
+
+    if (student === null || thisClass === null) {
+      return;
+    }
+
+    const classTime = dayTimeFormat(thisClass.time);
 
     await ctx.db.insert("classStudents", {
       studentId: args.studentId,
@@ -34,7 +41,7 @@ export const addStudentToClass = mutation({
     await ctx.db.insert("logs", {
       studentId: args.studentId,
       classId: args.classId,
-      message: `${student.firstName} ${student.lastName} was added to ${thisClass.name}`,
+      message: `${student.firstName} ${student.lastName} was added to ${thisClass.name} | ${classTime}.`,
     });
   },
 });

@@ -12,6 +12,20 @@ export const clienteleList = query({
   },
 });
 
+export const staffList = query({
+  args: {},
+  handler: async (ctx) => {
+    const users = await ctx.db.query("users").collect();
+
+    // filter out users with either admin or staff in roles
+    const staff = users.filter((user) => {
+      return user.roles?.includes("staff") || user.roles?.includes("admin");
+    });
+
+    return staff;
+  },
+});
+
 export const getUserById = query({
   args: { id: v.id("users") },
   handler: async (ctx, args) => {

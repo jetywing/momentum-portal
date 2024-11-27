@@ -53,7 +53,7 @@ export const getUnenrolledStudents = query({
     // find all students that are not in the class
     const allStudents = await ctx.db.query("students").collect();
     const studentsOutsideClass = allStudents.filter(
-      (s) => !studentClasses.some((sc) => sc.studentId === s._id),
+      (s) => !studentClasses.find((sc) => sc.studentId === s._id),
     );
 
     const unenrolledStudents = await Promise.all(
@@ -72,7 +72,7 @@ export const createStudent = mutation({
     account: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const account = ctx.db.get(args.account);
+    const account = await ctx.db.get(args.account);
     if (!account) {
       return null;
     }
@@ -91,5 +91,9 @@ export const createStudent = mutation({
     const updatedStudents = [...accStudents, newStudent];
 
     await ctx.db.patch(args.account, { students: updatedStudents });
+
+    await ctx.db.insert("logs", {
+      message: `${account.name} created student: ${args.firstName} ${args.lastName}`,
+    });
   },
 });
