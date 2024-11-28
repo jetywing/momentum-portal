@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { dayTimeFormat } from "@/lib/utils";
 
 const routes = [
   {
@@ -30,10 +31,18 @@ const routes = [
     name: "Classes",
     value: "/admin/classes",
   },
+  {
+    name: "Logs",
+    value: "/admin/analytics/logs",
+  },
 ];
 
 export function AdminCommandMenu() {
   const clients = useQuery(api.users.clienteleList);
+
+  const students = useQuery(api.students.getAllStudents);
+
+  const classes = useQuery(api.classes.getAllClasses);
 
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
@@ -59,6 +68,16 @@ export function AdminCommandMenu() {
     setOpen(!open);
   }
 
+  function handleStudentSelect(value: string) {
+    router.push(`/admin/students/${value}`);
+    setOpen(!open);
+  }
+
+  function handleClassSelect(value: string) {
+    router.push(`/admin/classes/${value}`);
+    setOpen(!open);
+  }
+
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Type a command or search..." />
@@ -80,6 +99,20 @@ export function AdminCommandMenu() {
           {clients?.map(({ _id, name }) => (
             <CommandItem key={_id} onSelect={() => handleClientSelect(_id)}>
               {name}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+        <CommandGroup heading="Students">
+          {students?.map(({ _id, firstName, lastName }) => (
+            <CommandItem key={_id} onSelect={() => handleStudentSelect(_id)}>
+              {firstName} {lastName}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+        <CommandGroup heading="Classes">
+          {classes?.map(({ _id, name, time }) => (
+            <CommandItem key={_id} onSelect={() => handleClassSelect(_id)}>
+              {name} - {dayTimeFormat(time)}
             </CommandItem>
           ))}
         </CommandGroup>

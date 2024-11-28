@@ -102,57 +102,61 @@ export default function UserPage({ params }: { params: { id: Id<"users"> } }) {
         ]}
         currentPage={user.name}
       />
-      <div className="flex flex-row items-end gap-6 p-12">
-        <Avatar className="h-32 w-32 rounded-full">
-          <AvatarImage src={user?.image} alt={user?.name} />
-          <AvatarFallback className="rounded-lg">
-            <UserIcon size={64} />
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <h1 className="text-3xl font-semibold">{user.name}</h1>
-          <p>{user.email}</p>
-        </div>
-      </div>
-      <Separator className="my-12 mb-8" />
-      <div className="flex flex-col gap-4 px-20">
-        <h2 className="text-2xl flex flex-col font-semibold">
-          Associated Students
-        </h2>
-        <div className="flex flex-wrap gap-4">
-          <Table>
-            <TableCaption>currently active students</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Team</TableHead>
-                <TableHead className="w-12">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="min-h-96">
-              {students.length > 0 ? (
-                students?.map((student) => (
-                  <TableRow key={student._id}>
-                    <TableCell>
-                      <Button variant="link" asChild>
-                        <Link href={`/admin/students/${student._id}`}>
-                          {student.firstName} {student.lastName}
-                        </Link>
-                      </Button>
-                    </TableCell>
-                    <TableCell>{student.team?.join(", ")}</TableCell>
-                    <TableCell>
-                      <MoreHorizontal className="mx-auto" />
-                    </TableCell>
+      <div className="flex justify-center">
+        <div className="flex max-w-7xl flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="flex flex-row items-end gap-6 p-12">
+            <Avatar className="h-32 w-32 rounded-full">
+              <AvatarImage src={user?.image} alt={user?.name} />
+              <AvatarFallback className="rounded-lg">
+                <UserIcon size={64} />
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-3xl font-semibold">{user.name}</h1>
+              <p>{user.email}</p>
+            </div>
+          </div>
+          <Separator className="my-12 mb-8" />
+          <div className="flex flex-col gap-4 px-20">
+            <h2 className="text-2xl flex flex-col font-semibold">
+              Associated Students
+            </h2>
+            <div className="flex flex-wrap gap-4">
+              <Table>
+                <TableCaption>currently active students</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Team</TableHead>
+                    <TableHead className="w-12">Actions</TableHead>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={3}>No associated students</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                </TableHeader>
+                <TableBody className="min-h-96">
+                  {students.length > 0 ? (
+                    students?.map((student) => (
+                      <TableRow key={student._id}>
+                        <TableCell>
+                          <Button variant="link" asChild>
+                            <Link href={`/admin/students/${student._id}`}>
+                              {student.firstName} {student.lastName}
+                            </Link>
+                          </Button>
+                        </TableCell>
+                        <TableCell>{student.team?.join(", ")}</TableCell>
+                        <TableCell>
+                          <MoreHorizontal className="mx-auto" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3}>No associated students</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </div>
       </div>
     </>

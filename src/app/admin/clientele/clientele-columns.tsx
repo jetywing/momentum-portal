@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { toast } from "sonner";
 // import { useMutation } from "convex/react";
 // import { api } from "../../../../convex/_generated/api";
 // import { Id } from "../../../../convex/_generated/dataModel";
@@ -52,6 +53,11 @@ export type Clients = {
   roles?: Array<"client" | "staff" | "admin">; // Optional array of roles
   students?: Array<Id<"students">>; // Optional array of associated student IDs
 };
+
+function copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text);
+  toast("Copied to clipboard");
+}
 
 export const columns: ColumnDef<Clients>[] = [
   {
@@ -137,7 +143,7 @@ export const columns: ColumnDef<Clients>[] = [
           variant={"link"}
           className="px-0"
           title="Copy Email"
-          onClick={() => navigator.clipboard.writeText(clientEmail)}
+          onClick={() => copyToClipboard(clientEmail)}
         >
           {clientEmail}
         </Button>

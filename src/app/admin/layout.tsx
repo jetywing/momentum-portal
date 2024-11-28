@@ -7,6 +7,7 @@ import { api } from "../../../convex/_generated/api";
 import { Card } from "@/components/ui/card";
 import { AdminCommandMenu } from "@/components/admin-command";
 import { LoaderCircle } from "lucide-react";
+import { Toaster } from "sonner";
 
 export default function AdminDashboardLayout({
   children, // will be a page or nested layout
@@ -43,6 +44,7 @@ export default function AdminDashboardLayout({
       <SidebarProvider>
         <AdminSidebar />
         <SidebarInset>{children}</SidebarInset>
+        <Toaster />
       </SidebarProvider>
     </>
   );

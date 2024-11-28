@@ -139,7 +139,6 @@ export default function CreateClassPage() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 p-8 md:min-h-min">
           <h1 className="text-4xl">New Class</h1>
-          {dayTimeFormat(3855)}
           <div className="py-12">
             <Card className="mx-auto max-w-4xl p-8">
               <Form {...form}>

@@ -125,8 +125,6 @@ function AddStudentForm({ classId }: { classId: Id<"classes"> }) {
     if (!newStudent) {
       return;
     }
-
-    window.location.reload();
   }
 
   return (
@@ -173,6 +171,15 @@ function AddStudentForm({ classId }: { classId: Id<"classes"> }) {
                             key={student?._id}
                             onSelect={() => {
                               form.setValue("studentId", student?._id);
+                              document.dispatchEvent(
+                                new KeyboardEvent("keydown", {
+                                  key: "Escape",
+                                  keyCode: 27,
+                                  code: "Escape",
+                                  bubbles: true,
+                                  cancelable: true,
+                                }),
+                              );
                             }}
                           >
                             {student?.firstName + " " + student?.lastName}
@@ -198,7 +205,21 @@ function AddStudentForm({ classId }: { classId: Id<"classes"> }) {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button
+          className="w-full"
+          type="submit"
+          onClick={() =>
+            document.dispatchEvent(
+              new KeyboardEvent("keydown", {
+                key: "Escape",
+                keyCode: 27,
+                code: "Escape",
+                bubbles: true,
+                cancelable: true,
+              }),
+            )
+          }
+        >
           Submit
         </Button>
       </form>

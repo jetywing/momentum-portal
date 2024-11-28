@@ -29,6 +29,7 @@ const schema = defineSchema({
     image: v.optional(v.string()),
     status: v.boolean(),
     birthday: v.optional(v.string()),
+    gender: v.optional(v.union(v.literal("male"), v.literal("female"))),
     team: v.optional(
       v.array(v.union(v.literal("mdp"), v.literal("mdp2"), v.literal("club"))),
     ),
