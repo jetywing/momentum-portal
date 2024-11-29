@@ -30,7 +30,31 @@ export const getClassesByStudent = query({
       studentClasses.map(async (sc) => ctx.db.get(sc.classId)),
     );
 
-    return classes;
+    const sortedClasses = classes.sort((a, b) => a.time - b.time);
+
+    return sortedClasses;
+  },
+});
+
+export const getAvailableClasses = query({
+  args: { id: v.id("students") },
+  handler: async (ctx, args) => {
+    const studentClasses = await ctx.db
+      .query("classStudents")
+      .withIndex("by_studentId", (q) => q.eq("studentId", args.id))
+      .collect();
+
+    // find all students that are not in the class
+    const allClasses = await ctx.db.query("classes").collect();
+    const availableClassIds = allClasses.filter(
+      (s) => !studentClasses.find((sc) => sc.classId === s._id),
+    );
+
+    const availableClasses = await Promise.all(
+      availableClassIds.map(async (sc) => ctx.db.get(sc._id)),
+    );
+
+    return availableClasses;
   },
 });
 

@@ -6,24 +6,25 @@ import { Separator } from "@/components/ui/separator";
 import { UserIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Id } from "../../../../../convex/_generated/dataModel";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { calcAge, dayTimeFormat } from "@/lib/utils";
+import { calcAge, dayTimeRange } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { api } from "../../../../../convex/_generated/api";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { AddClassToStudentDialog } from "@/components/add-class-to-student-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { RemoveFromClass } from "@/components/remove-from-class";
+import { Card } from "@/components/ui/card";
 
 function AccountLink({ userId }: { userId: Id<"users"> }) {
   const { data: user } = useQuery(
@@ -31,7 +32,7 @@ function AccountLink({ userId }: { userId: Id<"users"> }) {
   );
 
   if (!user) {
-    return <span>loading...</span>;
+    return <Skeleton className="h-4 w-20" />;
   }
 
   return (
@@ -116,49 +117,76 @@ export default function StudentPage({
             </Card>
           </div>
           <Separator className="my-12 mb-8" />
-          <div className="relative flex flex-col gap-4">
-            <h2 className="text-xl font-bold md:text-2xl">Classes</h2>
-            <div className="flex flex-wrap gap-4 py-4">
-              <Table>
-                <TableCaption>Currently Enrolled Classes</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Time</TableHead>
-                    <TableHead className="w-12">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="min-h-96">
-                  {isPending ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={3}
-                        className="h-24 text-center text-muted-foreground"
-                      >
-                        Loading...
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    classes?.map((c) => (
-                      <TableRow key={c?._id} className="bg-red p-4">
-                        <TableCell className="font-medium">
-                          <Button variant="link" className="p-0">
-                            <Link href={`/admin/classes/${c?._id}`}>
-                              <p>{c?.name}</p>
-                            </Link>
-                          </Button>
-                        </TableCell>
-                        <TableCell>
-                          {c?.time && dayTimeFormat(c.time)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <MoreHorizontal className="mx-auto" />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+          <div className="flex justify-start">
+            <div className="relative flex max-w-xl w-full flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold md:text-2xl">Classes</h2>
+                <AddClassToStudentDialog studentId={params.id} />
+              </div>
+              <div className="flex flex-col gap-4 py-4">
+                {isPending ? (
+                  <Card>
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </Card>
+                ) : (
+                  classes?.map((c) => (
+                    <Card key={c?._id} className="bg-red px-4 py-2">
+                      <div>
+                        <Button
+                          variant="link"
+                          className="text-xl px-0 font-bold"
+                        >
+                          <Link href={`/admin/classes/${c?._id}`}>
+                            {c?.name}
+                          </Link>
+                        </Button>
+                      </div>
+                      <p className="text-sm">
+                        {c?.time && dayTimeRange(c.time, c.duration)}
+                      </p>
+                      <div>
+                        <p className="text-sm">
+                          Instructor:{" "}
+                          {c?.instructor?.map((i) => (
+                            <AccountLink key={i} userId={i} />
+                          ))}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                c && navigator.clipboard.writeText(c?._id)
+                              }
+                            >
+                              Copy Class ID
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>
+                              <RemoveFromClass
+                                studentId={params.id}
+                                classId={c?._id}
+                                className={c?.name}
+                                studentName={`${student?.firstName} ${student?.lastName}`}
+                              />
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </Card>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </div>

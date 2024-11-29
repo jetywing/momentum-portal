@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { dayTimeFormat } from "@/lib/utils";
+import { Id } from "./_generated/dataModel";
 
 export const currentUser = query({
   args: {},
@@ -42,6 +43,39 @@ export const addStudentToClass = mutation({
       studentId: args.studentId,
       classId: args.classId,
       message: `${student.firstName} ${student.lastName} was added to ${thisClass.name} | ${classTime}.`,
+    });
+  },
+});
+
+export const removeStudentFromClass = mutation({
+  args: { studentId: v.id("students"), classId: v.id("classes") },
+  handler: async (ctx, args) => {
+    const student = await ctx.db.get(args.studentId);
+    const thisClass = await ctx.db.get(args.classId);
+
+    if (student === null || thisClass === null) {
+      return;
+    }
+
+    const classTime = dayTimeFormat(thisClass.time);
+
+    const classStudent = await ctx.db
+      .query("classStudents")
+      .withIndex("by_studentId_classId", (q) =>
+        q.eq("studentId", args.studentId).eq("classId", args.classId),
+      )
+      .unique();
+
+    if (classStudent === null) {
+      return;
+    }
+
+    await ctx.db.delete(classStudent?._id);
+
+    await ctx.db.insert("logs", {
+      studentId: args.studentId,
+      classId: args.classId,
+      message: `${student.firstName} ${student.lastName} was removed from ${thisClass.name} | ${classTime}.`,
     });
   },
 });

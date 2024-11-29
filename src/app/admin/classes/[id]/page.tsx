@@ -3,10 +3,10 @@
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { Id } from "../../../../../convex/_generated/dataModel";
-import { getClassData, getStudents } from "./actions";
+import { getClassData } from "./actions";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { calcAge, dayTimeFormat } from "@/lib/utils";
+import { calcAge, dayTimeRange } from "@/lib/utils";
 import { Header } from "@/components/header";
 import { AddStudentDialog } from "@/components/add-student-dialog";
 import Link from "next/link";
@@ -24,6 +24,17 @@ import { MoreHorizontal } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../../../convex/_generated/api";
+import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { RemoveFromClass } from "@/components/remove-from-class";
 
 type Class = {
   _id: Id<"classes">;
@@ -46,6 +57,18 @@ type Class = {
   students?: Id<"students">[]; // Array of student IDs
   instructor: Id<"users">[]; // Array of instructor IDs
 };
+
+function AccountLink({ userId }: { userId: Id<"users"> }) {
+  const { data: user } = useQuery(
+    convexQuery(api.users.getUserById, { id: userId }),
+  );
+
+  if (!user) {
+    return <span>loading...</span>;
+  }
+
+  return <span>{user.name}</span>;
+}
 
 export default function ThisClassPage({
   params,
@@ -106,7 +129,7 @@ export default function ThisClassPage({
     return <div>Error: {error.message}</div>;
   }
 
-  const dayTime = dayTimeFormat(thisClass.time);
+  const dayTime = dayTimeRange(thisClass.time, thisClass.duration);
 
   return (
     <>
@@ -124,15 +147,25 @@ export default function ThisClassPage({
               <div className="py-4">
                 <h1 className="text-3xl font-semibold">{thisClass.name}</h1>
               </div>
-              <div className="grid max-w-60 grid-cols-2 gap-2">
-                <p className="font-semibold">Time: </p>
-                <p>{dayTime}</p>
-                <p className="font-semibold">Capacity: </p>
-                <p>
-                  {data?.length} / {thisClass.capacity}
-                </p>
-                <p className="font-semibold">Season: </p>
-                <p>{thisClass.season}</p>
+              <div className="flex flex-col md:flex-row justify-between gap-4">
+                <div className="grid max-w-72 grid-cols-2 gap-1">
+                  <p className="font-semibold">Time: </p>
+                  <p>{dayTime}</p>
+                  <p className="font-semibold">Duration: </p>
+                  <p>{thisClass.duration}</p>
+                  <p className="font-semibold">Capacity: </p>
+                  <p>
+                    {data?.length} / {thisClass.capacity}
+                  </p>
+                  <p className="font-semibold">Season: </p>
+                  <p>{thisClass.season}</p>
+                </div>
+                <Card className="flex flex-col gap-4 py-6 px-8">
+                  <h3 className="text-xl font-semibold">Instructor</h3>
+                  {thisClass?.instructor?.map((a) => (
+                    <AccountLink key={a} userId={a} />
+                  ))}
+                </Card>
               </div>
             </div>
             <div className="pt-4">
@@ -161,7 +194,9 @@ export default function ThisClassPage({
                   {isPending ? (
                     <TableRow>
                       <TableCell colSpan={3}>
-                        <p>Loading...</p>
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -180,7 +215,34 @@ export default function ThisClassPage({
                         </TableCell>
                         <TableCell>{student?.team?.join(", ")}</TableCell>
                         <TableCell className="text-right">
-                          <MoreHorizontal className="mx-auto" />
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  student &&
+                                  navigator.clipboard.writeText(student?._id)
+                                }
+                              >
+                                Copy Student ID
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem>
+                                <RemoveFromClass
+                                  studentId={student?._id}
+                                  classId={classId}
+                                  studentName={`${student?.firstName} ${student?.lastName}`}
+                                  className={thisClass?.name}
+                                />
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))

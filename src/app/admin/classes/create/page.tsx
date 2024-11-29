@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn, dayTimeFormat } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import {
   Command,
   CommandEmpty,

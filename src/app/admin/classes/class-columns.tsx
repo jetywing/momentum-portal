@@ -13,11 +13,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { dayTimeFormat } from "@/lib/utils";
+import { dayTimeFormat, dayTimeRange } from "@/lib/utils";
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function InstructorCell({ instructorId }: { instructorId: Id<"users"> }) {
   const instructor = useQuery(api.users.getUserById, { id: instructorId });
@@ -46,7 +47,7 @@ function CapacityCell({
   const students = useQuery(api.students.getStudentsByClass, { id: classId });
 
   if (!students) {
-    return <span>loading...</span>;
+    return <Skeleton className="h-4 w-8" />;
   }
   return `${students.length}/${capacity}`;
 }
@@ -130,7 +131,8 @@ export const columns: ColumnDef<Classes>[] = [
     id: "time",
     accessorFn: (row) => {
       const minutes = row.time;
-      const timeFormat = dayTimeFormat(minutes);
+      const duration = row.duration;
+      const timeFormat = dayTimeRange(minutes, duration);
       return timeFormat;
     },
     header: ({ column }) => {
