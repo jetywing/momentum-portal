@@ -36,9 +36,17 @@ function AccountLink({ userId }: { userId: Id<"users"> }) {
   }
 
   return (
-    <Link href={`/admin/clientele/${userId}`}>
-      <span className="duration-150 hover:opacity-60">{user.name}</span>
-    </Link>
+    <Button variant={"link"} className="p-0" asChild>
+      <Link href={`/admin/clientele/${userId}`}>
+        <Avatar className="h-8 w-8 rounded-full">
+          <AvatarImage src={user.image} />
+          <AvatarFallback>
+            <UserIcon />
+          </AvatarFallback>
+        </Avatar>
+        {user.name}
+      </Link>
+    </Button>
   );
 }
 
@@ -95,30 +103,54 @@ export default function StudentPage({
                 <h1 className="text-3xl font-semibold">
                   {student?.firstName} {student?.lastName}
                 </h1>
-                <p>
-                  Birthday:{" "}
-                  {student?.birthday
-                    ? new Date(student.birthday).toLocaleDateString()
-                    : "n/a"}
-                </p>
-                <p>
-                  Age: {student?.birthday ? calcAge(student.birthday) : "?"}
-                </p>
-                <div className="flex gap-2 py-2">
-                  {student?.team?.map((t) => (
-                    <Badge key={t}>{t.toUpperCase()}</Badge>
+                <div className="flex flex-row gap-2 items-center">
+                  {student?.status ? (
+                    <Badge
+                      variant={"outline"}
+                      className="border-green-500 h-6 text-green-500"
+                    >
+                      Active
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant={"outline"}
+                      className="border-red-500 h-6 text-red-500"
+                    >
+                      Inactive
+                    </Badge>
+                  )}
+                  <div className="flex gap-2 py-2">
+                    {student?.team?.map((t) => (
+                      <Badge key={t}>{t.toUpperCase()}</Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <Separator className="my-12 mb-8" />
+          <div className="flex flex-col gap-4 px-4 divide-y md:divide-y-0 md:divide-x divide-solid  md:flex-row justify-between">
+            <div className="flex flex-col gap-4">
+              <p className="text-lg md:text-xl">
+                <span className="font-semibold">Age:</span>{" "}
+                {student?.birthday ? calcAge(student.birthday) : "?"}
+              </p>
+              <p className="text-lg md:text-xl">
+                <span className="font-semibold">Bday: </span>
+                {student?.birthday
+                  ? new Date(student.birthday).toLocaleDateString()
+                  : "n/a"}
+              </p>
+              <div className="flex flex-col gap-4">
+                <h3 className="text-xl font-semibold">Account:</h3>
+                <div className="flex flex-col gap-2 items-start">
+                  {student?.account?.map((a) => (
+                    <AccountLink key={a} userId={a} />
                   ))}
                 </div>
               </div>
             </div>
-            <Card className="flex flex-col gap-4 py-6 px-8">
-              <h3 className="text-xl font-semibold">Account</h3>
-              {student?.account?.map((a) => <AccountLink key={a} userId={a} />)}
-            </Card>
-          </div>
-          <Separator className="my-12 mb-8" />
-          <div className="flex justify-start">
-            <div className="relative flex max-w-xl w-full flex-col gap-4">
+            <div className="flex py-6 md:py-0 md:w-2/3 md:px-6 flex-col gap-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold md:text-2xl">Classes</h2>
                 <AddClassToStudentDialog studentId={params.id} />
@@ -146,15 +178,22 @@ export default function StudentPage({
                       <p className="text-sm">
                         {c?.time && dayTimeRange(c.time, c.duration)}
                       </p>
-                      <div>
-                        <p className="text-sm">
-                          Instructor:{" "}
-                          {c?.instructor?.map((i) => (
-                            <AccountLink key={i} userId={i} />
-                          ))}
-                        </p>
+                      <div className="flex gap-2 items-center">
+                        <p className="text-sm">Instructor: </p>
+                        {c?.instructor?.map((i) => (
+                          <AccountLink key={i} userId={i} />
+                        ))}
                       </div>
-                      <div className="text-right">
+                      <div className="flex py-1 justify-between">
+                        {c?.type ? (
+                          <Badge variant={"secondary"}>
+                            <span className="text-xs">
+                              {c?.type.toUpperCase()}
+                            </span>
+                          </Badge>
+                        ) : (
+                          <div />
+                        )}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">

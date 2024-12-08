@@ -10,20 +10,15 @@ import { useEffect, useState } from "react";
 import { getStudents, getUserData } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { calcAge } from "@/lib/utils";
 
 type User = {
   _id: Id<"users">;
+  _creationTime: number;
   name: string;
   email: string;
   image?: string;
@@ -31,6 +26,7 @@ type User = {
 
 type Student = {
   _id: Id<"students">;
+  _creationTime: number;
   idx?: number;
   firstName: string;
   lastName: string;
@@ -114,47 +110,86 @@ export default function UserPage({ params }: { params: { id: Id<"users"> } }) {
             <div>
               <h1 className="text-3xl font-semibold">{user.name}</h1>
               <p>{user.email}</p>
+              Customer since:{" "}
+              {(user._creationTime &&
+                new Date(user._creationTime).toLocaleDateString()) ||
+                "Unknown"}
             </div>
           </div>
           <Separator className="my-12 mb-8" />
-          <div className="flex flex-col gap-4 px-20">
+          <div className="flex flex-col gap-4">
             <h2 className="text-2xl flex flex-col font-semibold">
               Associated Students
             </h2>
-            <div className="flex flex-wrap gap-4">
-              <Table>
-                <TableCaption>currently active students</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Team</TableHead>
-                    <TableHead className="w-12">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="min-h-96">
-                  {students.length > 0 ? (
-                    students?.map((student) => (
-                      <TableRow key={student._id}>
-                        <TableCell>
-                          <Button variant="link" asChild>
-                            <Link href={`/admin/students/${student._id}`}>
-                              {student.firstName} {student.lastName}
-                            </Link>
-                          </Button>
-                        </TableCell>
-                        <TableCell>{student.team?.join(", ")}</TableCell>
-                        <TableCell>
-                          <MoreHorizontal className="mx-auto" />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={3}>No associated students</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+            <div className="flex flex-wrap justify-center md:justify-start gap-4">
+              {students.length > 0 ? (
+                students?.map((student) => (
+                  <Card key={student._id} className="w-52 p-4">
+                    <div className="flex justify-between py-4">
+                      <Avatar className="h-16 w-16 rounded-full">
+                        <AvatarImage
+                          src={student?.image}
+                          alt={student?.firstName}
+                        />
+                        <AvatarFallback className="rounded-lg">
+                          <UserIcon />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        {student.status ? (
+                          <Badge
+                            variant={"outline"}
+                            className="border-green-500 text-green-500"
+                          >
+                            Active
+                          </Badge>
+                        ) : (
+                          <Badge className="border-red-500 text-red-500">
+                            Inactive
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2 items-start">
+                      <Button variant="link" className="p-0" asChild>
+                        <Link href={`/admin/students/${student._id}`}>
+                          <span className="text-2xl text-wrap">
+                            {student.firstName} {student.lastName}
+                          </span>
+                        </Link>
+                      </Button>
+                      <div className="py-1">
+                        {student.team ? (
+                          student.team.map((team) => (
+                            <Badge key={team}>{team.toUpperCase()}</Badge>
+                          ))
+                        ) : (
+                          <Badge>REC</Badge>
+                        )}
+                      </div>
+                      <p>
+                        Age:{" "}
+                        {student.birthday
+                          ? calcAge(student.birthday)
+                          : "Unknown"}
+                      </p>
+                      <p>
+                        Birthday:{" "}
+                        {(student.birthday &&
+                          new Date(student.birthday).toLocaleDateString()) ||
+                          "Unknown"}
+                      </p>
+                    </div>
+                    <div className="w-full flex justify-end">
+                      <MoreHorizontal />
+                    </div>
+                  </Card>
+                ))
+              ) : (
+                <Card className="w-full p-16 flex place-content-center text-muted-foreground">
+                  No associated students
+                </Card>
+              )}
             </div>
           </div>
         </div>
