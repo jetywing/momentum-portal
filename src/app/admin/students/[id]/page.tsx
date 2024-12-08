@@ -1,4 +1,5 @@
-"use client";
+"use client";;
+import { use } from "react";
 
 import { Header } from "@/components/header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -50,11 +51,12 @@ function AccountLink({ userId }: { userId: Id<"users"> }) {
   );
 }
 
-export default function StudentPage({
-  params,
-}: {
-  params: { id: Id<"students"> };
-}) {
+export default function StudentPage(
+  props: {
+    params: Promise<{ id: Id<"students"> }>;
+  }
+) {
+  const params = use(props.params);
   const { data: student, isLoading } = useQuery(
     convexQuery(api.students.getStudentById, {
       id: params.id,

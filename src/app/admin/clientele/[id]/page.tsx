@@ -6,7 +6,7 @@ import { UserIcon } from "lucide-react";
 import { notFound, useRouter } from "next/navigation";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { Header } from "@/components/header";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { getStudents, getUserData } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -39,7 +39,8 @@ type Student = {
   isAccHolder: boolean;
 };
 
-export default function UserPage({ params }: { params: { id: Id<"users"> } }) {
+export default function UserPage(props: { params: Promise<{ id: Id<"users"> }> }) {
+  const params = use(props.params);
   const router = useRouter();
 
   const [user, setUser] = useState<User | null>(null); // Adjust type as needed

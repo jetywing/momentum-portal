@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { getClassData } from "./actions";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { calcAge, dayTimeRange } from "@/lib/utils";
 import { Header } from "@/components/header";
@@ -70,11 +70,12 @@ function AccountLink({ userId }: { userId: Id<"users"> }) {
   return <span>{user.name}</span>;
 }
 
-export default function ThisClassPage({
-  params,
-}: {
-  params: { id: Id<"classes"> };
-}) {
+export default function ThisClassPage(
+  props: {
+    params: Promise<{ id: Id<"classes"> }>;
+  }
+) {
+  const params = use(props.params);
   const router = useRouter();
 
   const classId = params.id;
