@@ -170,7 +170,7 @@ function AddClassForm({ studentId }: { studentId: Id<"students"> }) {
                             value={c?.name}
                             key={c?._id}
                             onSelect={() => {
-                              form.setValue("classId", c?._id);
+                              form.setValue("classId", c?._id as string);
                               document.dispatchEvent(
                                 new KeyboardEvent("keydown", {
                                   key: "Escape",

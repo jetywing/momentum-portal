@@ -14,7 +14,7 @@ export default function Home() {
     if (role?.includes("admin")) {
       router.push("/admin");
     } else if (!role?.includes("admin")) {
-      router.push("/client");
+      router.push("/signin");
     } else {
       router.push("/signin"); // Redirect to login if not authenticated
     }
