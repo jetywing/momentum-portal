@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.62.1",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "19.0.1",
     "@types/react-dom": "19.0.1",
     "eslint": "^8",
