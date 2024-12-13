@@ -1,4 +1,5 @@
-"use client";;
+"use client";
+
 import { use } from "react";
 
 import { Header } from "@/components/header";
@@ -27,9 +28,9 @@ import {
 import { RemoveFromClass } from "@/components/remove-from-class";
 import { Card } from "@/components/ui/card";
 
-function AccountLink({ userId }: { userId: Id<"users"> }) {
+function AccountLink({ userId }: { userId: Id<"clientele"> }) {
   const { data: user } = useQuery(
-    convexQuery(api.users.getUserById, { id: userId }),
+    convexQuery(api.clientele.getClientById, { id: userId }),
   );
 
   if (!user) {
@@ -38,24 +39,22 @@ function AccountLink({ userId }: { userId: Id<"users"> }) {
 
   return (
     <Button variant={"link"} className="p-0" asChild>
-      <Link href={`/admin/clientele/${userId}`}>
+      <Link href={`/admin/accounts/${userId}`}>
         <Avatar className="h-8 w-8 rounded-full">
           <AvatarImage src={user.image} />
           <AvatarFallback>
             <UserIcon />
           </AvatarFallback>
         </Avatar>
-        {user.name}
+        {user.firstName} {user.lastName}
       </Link>
     </Button>
   );
 }
 
-export default function StudentPage(
-  props: {
-    params: Promise<{ id: Id<"students"> }>;
-  }
-) {
+export default function StudentPage(props: {
+  params: Promise<{ id: Id<"students"> }>;
+}) {
   const params = use(props.params);
   const { data: student, isLoading } = useQuery(
     convexQuery(api.students.getStudentById, {
@@ -129,6 +128,9 @@ export default function StudentPage(
                 </div>
               </div>
             </div>
+            <Button variant="outline" asChild>
+              <Link href={`/admin/students/${params.id}/edit`}>Edit</Link>
+            </Button>
           </div>
           <Separator className="my-12 mb-8" />
           <div className="flex flex-col gap-4 px-4 divide-y md:divide-y-0 md:divide-x divide-solid  md:flex-row justify-between">
@@ -180,12 +182,13 @@ export default function StudentPage(
                       <p className="text-sm">
                         {c?.time && dayTimeRange(c.time, c.duration)}
                       </p>
-                      <div className="flex gap-2 items-center">
-                        <p className="text-sm">Instructor: </p>
-                        {c?.instructor?.map((i) => (
-                          <AccountLink key={i} userId={i} />
-                        ))}
-                      </div>
+                      {/* make a different button for staff */}
+                      {/* <div className="flex gap-2 items-center"> */}
+                      {/*   <p className="text-sm">Instructor: </p> */}
+                      {/*   {c?.instructor?.map((i) => ( */}
+                      {/*     <AccountLink key={i} userId={i} /> */}
+                      {/*   ))} */}
+                      {/* </div> */}
                       <div className="flex py-1 justify-between">
                         {c?.type ? (
                           <Badge variant={"secondary"}>

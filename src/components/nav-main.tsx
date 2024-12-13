@@ -16,6 +16,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export function NavMain({
   items,
@@ -36,10 +37,10 @@ export function NavMain({
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
-            <a href="/">
+            <Link href="/admin/">
               <PanelsTopLeft />
               <span>Dashboard</span>
-            </a>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
         {items.map((item) => (

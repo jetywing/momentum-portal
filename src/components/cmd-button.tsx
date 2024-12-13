@@ -1,3 +1,5 @@
+"use client";
+
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "./ui/button";
 import { SearchIcon } from "lucide-react";

@@ -13,16 +13,26 @@ const schema = defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     isAnonymous: v.optional(v.boolean()),
+    client: v.optional(v.id("clientele")),
     roles: v.optional(
       v.array(
         v.union(v.literal("client"), v.literal("staff"), v.literal("admin")),
       ),
     ),
-    students: v.optional(v.array(v.id("students"))),
     // other "users" fields...
   }).index("email", ["email"]),
+  clientele: defineTable({
+    firstName: v.string(),
+    lastName: v.string(),
+    status: v.optional(v.boolean()),
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    account: v.optional(v.id("users")),
+    students: v.optional(v.array(v.id("students"))),
+  }),
   students: defineTable({
-    // idx is short for index here.
+    // idx is short for index here. Don't think I'll be using this tho.
     idx: v.optional(v.number()),
     firstName: v.string(),
     lastName: v.string(),
@@ -34,7 +44,7 @@ const schema = defineSchema({
       v.array(v.union(v.literal("mdp"), v.literal("mdp2"), v.literal("club"))),
     ),
     classes: v.optional(v.array(v.id("classes"))),
-    account: v.optional(v.array(v.id("users"))),
+    account: v.optional(v.array(v.id("clientele"))),
     isAccHolder: v.boolean(),
   }),
   classes: defineTable({
@@ -42,6 +52,7 @@ const schema = defineSchema({
     description: v.optional(v.string()),
     type: v.optional(v.union(v.literal("team"), v.literal("rec"))),
     room: v.optional(v.string()),
+    // May just be getting extrapolating day from time field
     day: v.optional(
       v.union(
         v.literal("Monday"),
@@ -53,12 +64,18 @@ const schema = defineSchema({
         v.literal("Sunday"),
       ),
     ),
+    // time is in minutes in a week long context
     time: v.number(),
     duration: v.number(),
     season: v.optional(v.string()),
     capacity: v.optional(v.number()),
     students: v.optional(v.array(v.id("students"))),
-    instructor: v.array(v.id("users")),
+    instructor: v.array(v.union(v.id("users"), v.id("staff"))),
+  }),
+  staff: defineTable({
+    name: v.string(),
+    userId: v.optional(v.id("users")),
+    classId: v.optional(v.array(v.id("classes"))),
   }),
   classStudents: defineTable({
     studentId: v.id("students"),

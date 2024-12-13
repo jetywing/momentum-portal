@@ -7,14 +7,8 @@ import { notFound, useRouter } from "next/navigation";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { Header } from "@/components/header";
 import { useEffect, useState, use } from "react";
-import { getStudents, getUserData } from "./actions";
+import { getUserData } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { calcAge } from "@/lib/utils";
 
 type User = {
   _id: Id<"users">;
@@ -24,27 +18,13 @@ type User = {
   image?: string;
 };
 
-type Student = {
-  _id: Id<"students">;
-  _creationTime: number;
-  idx?: number;
-  firstName: string;
-  lastName: string;
-  image?: string;
-  status: boolean;
-  birthday?: string;
-  team?: ("mdp" | "mdp2" | "club")[];
-  classes?: Id<"classes">[];
-  account?: Id<"users">[];
-  isAccHolder: boolean;
-};
-
-export default function UserPage(props: { params: Promise<{ id: Id<"users"> }> }) {
+export default function UserPage(props: {
+  params: Promise<{ id: Id<"users"> }>;
+}) {
   const params = use(props.params);
   const router = useRouter();
 
   const [user, setUser] = useState<User | null>(null); // Adjust type as needed
-  const [students, setStudents] = useState<Student[]>([]); // Adjust type as needed
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,8 +41,6 @@ export default function UserPage(props: { params: Promise<{ id: Id<"users"> }> }
         setUser(resData.value);
 
         // Fetch associated students
-        const studentsData = await getStudents([params.id]);
-        setStudents(studentsData?.value || []);
       } catch (error) {
         console.error("Error fetching data:", error);
         router.push("/error"); // Redirect to a generic error page
@@ -122,76 +100,7 @@ export default function UserPage(props: { params: Promise<{ id: Id<"users"> }> }
             <h2 className="text-2xl flex flex-col font-semibold">
               Associated Students
             </h2>
-            <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              {students.length > 0 ? (
-                students?.map((student) => (
-                  <Card key={student._id} className="w-52 p-4">
-                    <div className="flex justify-between py-4">
-                      <Avatar className="h-16 w-16 rounded-full">
-                        <AvatarImage
-                          src={student?.image}
-                          alt={student?.firstName}
-                        />
-                        <AvatarFallback className="rounded-lg">
-                          <UserIcon />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        {student.status ? (
-                          <Badge
-                            variant={"outline"}
-                            className="border-green-500 text-green-500"
-                          >
-                            Active
-                          </Badge>
-                        ) : (
-                          <Badge className="border-red-500 text-red-500">
-                            Inactive
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2 items-start">
-                      <Button variant="link" className="p-0" asChild>
-                        <Link href={`/admin/students/${student._id}`}>
-                          <span className="text-2xl text-wrap">
-                            {student.firstName} {student.lastName}
-                          </span>
-                        </Link>
-                      </Button>
-                      <div className="py-1">
-                        {student.team ? (
-                          student.team.map((team) => (
-                            <Badge key={team}>{team.toUpperCase()}</Badge>
-                          ))
-                        ) : (
-                          <Badge>REC</Badge>
-                        )}
-                      </div>
-                      <p>
-                        Age:{" "}
-                        {student.birthday
-                          ? calcAge(student.birthday)
-                          : "Unknown"}
-                      </p>
-                      <p>
-                        Birthday:{" "}
-                        {(student.birthday &&
-                          new Date(student.birthday).toLocaleDateString()) ||
-                          "Unknown"}
-                      </p>
-                    </div>
-                    <div className="w-full flex justify-end">
-                      <MoreHorizontal />
-                    </div>
-                  </Card>
-                ))
-              ) : (
-                <Card className="w-full p-16 flex place-content-center text-muted-foreground">
-                  No associated students
-                </Card>
-              )}
-            </div>
+            <div className="flex flex-wrap justify-center md:justify-start gap-4"></div>
           </div>
         </div>
       </div>

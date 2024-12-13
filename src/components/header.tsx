@@ -22,7 +22,7 @@ export function Header({
   }[];
 }) {
   return (
-    <header className="mb-4">
+    <header className="mb-4 sticky top-0 z-50 bg-background">
       <div className="flex items-center justify-between p-2">
         <div className="flex items-center space-x-2">
           <SidebarTrigger />
@@ -30,17 +30,17 @@ export function Header({
           <Breadcrumb>
             <BreadcrumbList>
               {breadcrumbs?.map((breadcrumb) => (
-                <>
-                  <BreadcrumbItem
-                    key={breadcrumb.title}
-                    className="hidden md:block"
-                  >
+                <div
+                  key={breadcrumb.title}
+                  className="flex items-center gap-0 md:gap-2"
+                >
+                  <BreadcrumbItem className="hidden md:block">
                     <BreadcrumbLink href={breadcrumb.url}>
                       {breadcrumb.title}
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
-                </>
+                </div>
               ))}
               <BreadcrumbItem>
                 <BreadcrumbPage>{currentPage}</BreadcrumbPage>

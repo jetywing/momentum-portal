@@ -42,7 +42,7 @@ export function dayTimeRange(time: number, duration: number) {
   const endAmpm = endHours >= 12 ? "pm" : "am";
   const endFormattedHours = endHours % 12 || 12;
 
-  return `${days[dayIndex]} ${formattedHours}:${mins.toString().padStart(2, "0")} - ${endFormattedHours}:${endMins.toString().padStart(2, "0")} ${endAmpm}`;
+  return `${days[dayIndex]} ${formattedHours}:${mins.toString().padStart(2, "0")} - ${endFormattedHours}:${endMins.toString().padStart(2, "0")}${endAmpm}`;
 }
 
 export function calcAge(birthday: string) {

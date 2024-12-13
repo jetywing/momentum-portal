@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { dayTimeFormat } from "@/lib/utils";
+import { DialogTitle } from "./ui/dialog";
 
 const routes = [
   {
@@ -20,8 +21,8 @@ const routes = [
     value: "/admin",
   },
   {
-    name: "Clientele",
-    value: "/admin/clientele",
+    name: "Accounts",
+    value: "/admin/accounts",
   },
   {
     name: "Students",
@@ -31,6 +32,11 @@ const routes = [
     name: "Classes",
     value: "/admin/classes",
   },
+  { name: "Staff", value: "/admin/staff" },
+  {
+    name: "Analytics",
+    value: "/admin/analytics",
+  },
   {
     name: "Logs",
     value: "/admin/analytics/logs",
@@ -38,7 +44,7 @@ const routes = [
 ];
 
 export function AdminCommandMenu() {
-  const clients = useQuery(api.users.clienteleList);
+  const clients = useQuery(api.clientele.getClientele);
 
   const students = useQuery(api.students.getAllStudents);
 
@@ -64,7 +70,7 @@ export function AdminCommandMenu() {
   }
 
   function handleClientSelect(value: string) {
-    router.push(`/admin/clientele/${value}`);
+    router.push(`/admin/accounts/${value}`);
     setOpen(!open);
   }
 
@@ -80,6 +86,7 @@ export function AdminCommandMenu() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
+      <DialogTitle hidden>Search</DialogTitle>
       <CommandInput placeholder="Type a command or search..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
@@ -96,9 +103,9 @@ export function AdminCommandMenu() {
           })}
         </CommandGroup>
         <CommandGroup heading="Clientele">
-          {clients?.map(({ _id, name }) => (
+          {clients?.map(({ _id, firstName, lastName }) => (
             <CommandItem key={_id} onSelect={() => handleClientSelect(_id)}>
-              {name}
+              {firstName} {lastName}
             </CommandItem>
           ))}
         </CommandGroup>

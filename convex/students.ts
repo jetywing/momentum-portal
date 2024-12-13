@@ -16,13 +16,21 @@ export const getStudentById = query({
   },
 });
 
-export const getStudentsByAccount = query({
-  args: { id: v.array(v.id("users")) },
+export const getStudentsByClient = query({
+  args: { id: v.id("clientele") },
   handler: async (ctx, args) => {
-    return ctx.db
-      .query("students")
-      .filter((q) => q.eq(q.field("account"), args.id))
-      .collect();
+    const students = await ctx.db.query("students").collect();
+
+    return students.filter((s) => s.account?.includes(args.id));
+  },
+});
+
+export const getStudentsNotFromClient = query({
+  args: { id: v.id("clientele") },
+  handler: async (ctx, args) => {
+    const students = await ctx.db.query("students").collect();
+
+    return students.filter((s) => !s.account?.includes(args.id));
   },
 });
 
@@ -69,7 +77,7 @@ export const createStudent = mutation({
     firstName: v.string(),
     lastName: v.string(),
     birthday: v.string(),
-    account: v.id("users"),
+    account: v.id("clientele"),
   },
   handler: async (ctx, args) => {
     const account = await ctx.db.get(args.account);
@@ -93,7 +101,65 @@ export const createStudent = mutation({
     await ctx.db.patch(args.account, { students: updatedStudents });
 
     await ctx.db.insert("logs", {
-      message: `${account.name} created student: ${args.firstName} ${args.lastName}`,
+      message: `${account.firstName} ${account.lastName} created student: ${args.firstName} ${args.lastName}`,
     });
+
+    return newStudent;
+  },
+});
+
+export const editStudent = mutation({
+  args: {
+    id: v.id("students"),
+    firstName: v.optional(v.string()),
+    lastName: v.optional(v.string()),
+    birthday: v.optional(v.string()),
+    account: v.optional(v.array(v.id("clientele"))),
+  },
+  handler: async (ctx, args) => {
+    const student = await ctx.db.get(args.id);
+    if (!student) {
+      return null;
+    }
+
+    const existingAccount = student?.account || [];
+
+    const accounts = args.account || [];
+
+    accounts.map(async (a) => {
+      const account = await ctx.db.get(a);
+      if (!account) {
+        return null;
+      }
+      // need Symbol.iterator to make this work
+
+      if (!account.students) {
+        account.students = [];
+      }
+
+      await ctx.db.patch(a, { students: [...account.students, args.id] });
+    });
+
+    if (args.account) {
+      const newAccounts = existingAccount.concat(args.account);
+      await ctx.db.patch(args.id, {
+        firstName: args.firstName,
+        lastName: args.lastName,
+        birthday: args.birthday,
+        account: newAccounts,
+      });
+
+      await ctx.db.insert("logs", {
+        message: `Account: ${args.account} added to student: ${args.firstName} ${args.lastName}`,
+      });
+    }
+
+    if (!args.account) {
+      await ctx.db.patch(args.id, {
+        firstName: args.firstName,
+        lastName: args.lastName,
+        birthday: args.birthday,
+      });
+    }
   },
 });

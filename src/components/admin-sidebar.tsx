@@ -10,6 +10,7 @@ import {
   Users,
   Mail,
   ChevronsRight,
+  Coffee,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -33,22 +34,18 @@ import { ThemeToggle } from "./theme-toggle";
 const data = {
   navMain: [
     {
-      title: "Clientele",
-      url: "/admin/clientele",
+      title: "Accounts",
+      url: "/admin/accounts",
       icon: BookUser,
       isActive: true,
       items: [
         {
           title: "View All",
-          url: "/admin/clientele",
+          url: "/admin/accounts",
         },
         {
           title: "Create",
-          url: "/admin/clientele/create",
-        },
-        {
-          title: "Settings",
-          url: "#",
+          url: "/admin/accounts/create",
         },
       ],
     },
@@ -64,10 +61,6 @@ const data = {
         {
           title: "Create",
           url: "/admin/students/create",
-        },
-        {
-          title: "Settings",
-          url: "#",
         },
       ],
     },
@@ -95,6 +88,21 @@ const data = {
       ],
     },
     {
+      title: "Staff",
+      url: "/admin/staff",
+      icon: Coffee,
+      items: [
+        {
+          title: "View All",
+          url: "/admin/staff",
+        },
+        {
+          title: "Create",
+          url: "/admin/staff/create",
+        },
+      ],
+    },
+    {
       title: "Billing",
       url: "#",
       icon: NotebookText,
@@ -118,7 +126,7 @@ const data = {
       ],
     },
     {
-      title: "Messages",
+      title: "Messaging",
       url: "#",
       icon: Mail,
       items: [

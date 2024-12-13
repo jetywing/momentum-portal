@@ -81,20 +81,23 @@ export default function CreateStudentPage() {
 
   const router = useRouter();
 
-  const accounts = useQuery(api.users.clienteleList);
+  const accounts = useQuery(api.clientele.getClientele);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const birthday = `${values.year}-${values.month}-${values.day}T00:00:00Z`;
 
-    await fetchMutation(api.students.createStudent, {
+    const response = await fetchMutation(api.students.createStudent, {
       firstName: values.firstName as string,
       lastName: values.lastName as string,
       birthday: birthday as string,
-      account: values.account as Id<"users">,
+      account: values.account as Id<"clientele">,
     });
+
+    const id = response as Id<"students">;
+
     // TODO: check for successful submission show loading spinner in button
     // before pushing to new students page.
-    router.push("/admin/students");
+    router.push(`/admin/students/${id}`);
   }
 
   return (
@@ -269,7 +272,7 @@ export default function CreateStudentPage() {
                                 {field.value
                                   ? accounts?.find(
                                       (account) => account._id === field.value,
-                                    )?.name
+                                    )?.firstName
                                   : "Select account"}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                               </Button>
@@ -283,13 +286,13 @@ export default function CreateStudentPage() {
                                 <CommandGroup>
                                   {accounts?.map((account) => (
                                     <CommandItem
-                                      value={account.name}
+                                      value={`${account.firstName} ${account.lastName}`}
                                       key={account._id}
                                       onSelect={() => {
                                         form.setValue("account", account._id);
                                       }}
                                     >
-                                      {account.name}
+                                      {account.firstName} {account.lastName}
                                       <Check
                                         className={cn(
                                           "ml-auto",
